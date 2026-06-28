@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>理科室からの脱出</title>
+
+  <style>
+    :root {
+      --bg: #f3efe3;
+      --paper: #fffdf6;
+      --ink: #1f2a2e;
+      --sub: #687477;
+      --green: #2f6f5e;
+      --dark-green: #244f45;
+      --blue: #2f5f83;
+      --red: #a3463a;
+      --yellow: #e0bc4f;
+      --line: #d8cfbd;
+      --shadow: 0 16px 36px rgba(30, 35, 38, 0.14);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+      background:
+        linear-gradient(rgba(243, 239, 227, 0.94), rgba(243, 239, 227, 0.94)),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0,
+          transparent 38px,
+          rgba(0,0,0,0.025) 39px
+        );
+      color: var(--ink);
+    }
+
+    header {
+      background: #243b35;
+      color: white;
+      padding: 18px 20px;
+      border-bottom: 6px solid #c9a941;
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 38px);
+      letter-spacing: 0.04em;
+    }
+
+    .header-note {
+      margin: 6px 0 0;
+      color: #d9e5de;
+      font-size: 14px;
+    }
+
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .small-btn {
+      border: none;
+      border-radius: 999px;
+      background: #f6f0d7;
+      color: #1f2a2e;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.18);
+    }
+
+    .small-btn:hover {
+      transform: translateY(1px);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.18);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 22px auto;
+      padding: 0 16px 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .room-wrap,
+    .side-panel,
+    .message-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .room-wrap {
+      padding: 16px;
+    }
+
+    .room-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .room-title h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .progress {
+      font-size: 14px;
+      color: var(--sub);
+      font-weight: 700;
+    }
+
+    .room {
+      min-height: 560px;
+      border-radius: 16px;
+      padding: 16px;
+      background:
+        linear-gradient(to bottom, #e9dfc8 0 54%, #d6c4a4 54% 100%);
+      border: 1px solid #cfc1a7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blackboard-band {
+      background: #263f38;
+      color: #eef7ef;
+      border: 6px solid #8a6c3b;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.25);
+    }
+
+    .blackboard-band strong {
+      color: #ffe27a;
+    }
+
+    .spots {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .spots {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+    }
+
+    .spot {
+      min-height: 108px;
+      border: 2px solid #b8aa91;
+      border-radius: 14px;
+      background: rgba(255, 253, 246, 0.92);
+      cursor: pointer;
+      text-align: left;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: 0.16s ease;
+      position: relative;
+    }
+
+    .spot:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    }
+
+    .spot.solved {
+      background: #eef7ee;
+      border-color: #77a97f;
+    }
+
+    .spot.locked {
+      background: #f7f2ea;
+      color: #7b7268;
+      border-style: dashed;
+    }
+
+    .spot-name {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .spot-desc {
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      width: fit-content;
+      font-size: 11px;
+      font-weight: 800;
+      color: white;
+      background: var(--blue);
+      border-radius: 999px;
+      padding: 4px 8px;
+      margin-top: 10px;
+    }
+
+    .spot.solved .badge {
+      background: var(--green);
+    }
+
+    .spot.locked .badge {
+      background: #8d7e67;
+    }
+
+    .side-panel {
+      padding: 16px;
+      height: fit-content;
+      position: sticky;
+      top: 12px;
+    }
+
+    .side-panel h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .objective {
+      background: #f6f0d7;
+      border: 1px solid #e0cf88;
+      border-radius: 12px;
+      padding: 12px;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .inventory {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .empty {
+      color: var(--sub);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .code-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .code-cell {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      text-align: center;
+      padding: 10px 4px;
+    }
+
+    .code-cell small {
+      display: block;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    .code-cell strong {
+      font-size: 22px;
+    }
+
+    .message-box {
+      margin-top: 16px;
+      padding: 14px;
+      line-height: 1.7;
+      min-height: 70px;
+    }
+
+    .message-box strong {
+      color: var(--green);
+    }
+
+    .modal-back {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 20, 22, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 20;
+    }
+
+    .modal-back.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(720px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--paper);
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+      padding: 18px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .close-btn {
+      border: none;
+      background: #e8e0d1;
+      border-radius: 999px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .question {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+
+    .choice-btn,
+    .action-btn {
+      border: 1px solid #b8aa91;
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .choice-btn:hover,
+    .action-btn:hover {
+      border-color: var(--green);
+      background: #f4fbf4;
+    }
+
+    .action-btn {
+      background: var(--green);
+      color: white;
+      font-weight: 800;
+      text-align: center;
+      border: none;
+      margin-top: 12px;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      line-height: 1.7;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.ok {
+      background: #edf7ed;
+      border: 1px solid #98c49b;
+    }
+
+    .status.ng {
+      background: #fff0ed;
+      border: 1px solid #d99a90;
+    }
+
+    .hint-box {
+      margin-top: 12px;
+      background: #f6f0d7;
+      border: 1px solid #e0cf88;
+      border-radius: 12px;
+      padding: 12px;
+      line-height: 1.7;
+      display: none;
+    }
+
+    .hint-box.show {
+      display: block;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .lock-input {
+      font-size: 24px;
+      letter-spacing: 0.2em;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      width: 180px;
+      background: #fff;
+    }
+
+    .clear-screen {
+      background: #edf7ed;
+      border: 1px solid #98c49b;
+      border-radius: 16px;
+      padding: 16px;
+      line-height: 1.8;
+    }
+
+    .review-list {
+      margin: 10px 0 0;
+      padding-left: 1.2em;
+    }
+
+    .review-list li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>理科室からの脱出</h1>
+        <p class="header-note">理科室を調べ、観察・計算・推理でドアの暗号を解け。</p>
+      </div>
+      <div class="top-buttons">
+        <button class="small-btn" id="hintBtn">今のヒント</button>
+        <button class="small-btn" id="resetBtn">最初から</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="room-wrap">
+        <div class="room-title">
+          <h2>理科室</h2>
+          <div class="progress" id="progressText">進行状況を読み込み中...</div>
+        </div>
+
+        <div class="room">
+          <div class="blackboard-band">
+            <strong>黒板の文字：</strong>
+            「体積 → 色 → 倍率 → 電気」の順に数字を並べよ。
+          </div>
+
+          <div class="spots">
+            <button class="spot" data-spot="blackboard">
+              <span>
+                <span class="spot-name">黒板</span>
+                <span class="spot-desc">最初の指示と、最終暗号の並び順が書かれている。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="cylinder">
+              <span>
+                <span class="spot-name">メスシリンダー</span>
+                <span class="spot-desc">液体が入っている。目盛りを読む必要がありそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="shelf">
+              <span>
+                <span class="spot-name">薬品棚</span>
+                <span class="spot-desc">鍵がかかっている。中に薬品がありそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="beaker">
+              <span>
+                <span class="spot-name">ビーカー</span>
+                <span class="spot-desc">透明な液体が入っている。性質を調べられるかもしれない。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="burner">
+              <span>
+                <span class="spot-name">ガスバーナー</span>
+                <span class="spot-desc">正しい使い方を確認すると、引き出しが開きそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="microscope">
+              <span>
+                <span class="spot-name">顕微鏡</span>
+                <span class="spot-desc">レンズが外れている。倍率の計算が関係していそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="compass">
+              <span>
+                <span class="spot-name">方位磁針</span>
+                <span class="spot-desc">針が北東を指している。棚のボタンと関係がありそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="geology">
+              <span>
+                <span class="spot-name">地層ポスター</span>
+                <span class="spot-desc">地層の上下関係を読むと、隠し場所がわかりそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="circuit">
+              <span>
+                <span class="spot-name">回路装置</span>
+                <span class="spot-desc">電池と導線があれば、ライトをつけられそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="density">
+              <span>
+                <span class="spot-name">金属片</span>
+                <span class="spot-desc">質量と体積のメモがある。密度を計算できそうだ。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="weather">
+              <span>
+                <span class="spot-name">天気図カード</span>
+                <span class="spot-desc">低気圧と風の向きに関する追加ミッション。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="heredity">
+              <span>
+                <span class="spot-name">遺伝カード</span>
+                <span class="spot-desc">丸い種子としわの種子の組み合わせを考える。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="space">
+              <span>
+                <span class="spot-name">天体模型</span>
+                <span class="spot-desc">太陽・地球・月の位置関係を考える追加ミッション。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+
+            <button class="spot" data-spot="door">
+              <span>
+                <span class="spot-name">出口のドア</span>
+                <span class="spot-desc">4桁のロックがある。暗号を入力すれば脱出できる。</span>
+              </span>
+              <span class="badge"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-box" id="messageBox">
+        まずは黒板を調べよう。理科室の中に、脱出に必要な数字が隠されている。
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <h2>現在の目標</h2>
+      <div class="objective" id="objectiveBox">
+        黒板を調べて、暗号のルールを確認しよう。
+      </div>
+
+      <h2>持ち物</h2>
+      <div class="inventory" id="inventoryBox"></div>
+
+      <h2>暗号メモ</h2>
+      <div class="code-list">
+        <div class="code-cell">
+          <small>体積</small>
+          <strong id="codeVolume">?</strong>
+        </div>
+        <div class="code-cell">
+          <small>色</small>
+          <strong id="codeColor">?</strong>
+        </div>
+        <div class="code-cell">
+          <small>倍率</small>
+          <strong id="codeMicro">?</strong>
+        </div>
+        <div class="code-cell">
+          <small>電気</small>
+          <strong id="codeElectric">?</strong>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal-back" id="modalBack">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modalTitle">タイトル</h2>
+        <button class="close-btn" id="closeModal">×</button>
+      </div>
+      <div id="modalBody"></div>
+      <div class="hint-box" id="modalHint"></div>
+      <div class="status" id="modalStatus"></div>
+    </div>
+  </div>
+
+  <script>
+    const FINAL_CODE = "8714";
+
+    const defaultState = {
+      items: [],
+      solved: {},
+      codes: {},
+      hintIndex: {},
+      currentTarget: "黒板を調べて、暗号のルールを確認しよう。",
+      clear: false
+    };
+
+    let state = loadState();
+
+    const itemInfo = {
+      "小さな鍵": "薬品棚を開けるための鍵。",
+      "BTB溶液": "酸性・中性・アルカリ性を色で調べる薬品。",
+      "接眼レンズ": "顕微鏡に取り付けるレンズ。",
+      "導線": "回路をつなぐための線。",
+      "電池": "回路に電流を流すための電源。"
+    };
+
+    const hints = {
+      blackboard: [
+        "黒板には、最後の暗号の並び順が書かれている。",
+        "体積、色、倍率、電気の4つの数字を集める。",
+        "集めた数字を、黒板の順番でドアに入力する。"
+      ],
+      cylinder: [
+        "メスシリンダーは、目線を液面と同じ高さにして読む。",
+        "液面は少しへこんで見える。読むのは一番低いところ。",
+        "この液体は38mL。暗号には一の位を使う。"
+      ],
+      shelf: [
+        "薬品棚には鍵がかかっている。",
+        "鍵は、最初に解ける測定の謎に関係している。",
+        "メスシリンダーを調べてみよう。"
+      ],
+      beaker: [
+        "透明な液体の性質を調べるには、薬品が必要。",
+        "BTB溶液は、酸性で黄色、中性で緑色、アルカリ性で青色になる。",
+        "黄色になったら、薬品棚のメモの『黄』に対応する数字を見る。"
+      ],
+      burner: [
+        "ガスバーナーは、安全な手順で使う必要がある。",
+        "マッチに火をつけてから、ガス調節ねじを少し開く。",
+        "元栓を開く → マッチに火 → ガス調節ねじ → 空気調節ねじ、の順に考える。"
+      ],
+      microscope: [
+        "顕微鏡は、接眼レンズと対物レンズの倍率をかける。",
+        "接眼レンズ10倍、対物レンズ15倍なら、10×15。",
+        "150倍なので、暗号には百の位の1を使う。"
+      ],
+      compass: [
+        "方位磁針のN極は北を指す。",
+        "北東は、北と東の間の方角。",
+        "棚の方角ボタンは、N → E の順に押す。"
+      ],
+      geology: [
+        "地層は、ふつう下にあるものほど古い。",
+        "ポスターの一番下の地層に注目する。",
+        "一番古い地層の裏に電池が隠されている。"
+      ],
+      circuit: [
+        "電流計は、電流の通り道に入れる。",
+        "電圧計は、測りたい部分をはさむようにつなぐ。",
+        "電流計は直列、電圧計は並列。"
+      ],
+      door: [
+        "ドアの暗号は4桁。",
+        "黒板の順番は、体積 → 色 → 倍率 → 電気。",
+        "暗号メモの4つの数字を左から順に入力する。"
+      ],
+      density: [
+        "密度は、質量÷体積で求める。",
+        "54g ÷ 20cm³ を計算する。",
+        "密度は2.7g/cm³。アルミニウムに近い。"
+      ],
+      weather: [
+        "日本付近の低気圧では、風は中心に向かって吹き込む。",
+        "北半球では、低気圧のまわりの風は反時計回りに吹き込む。",
+        "答えは反時計回り。"
+      ],
+      heredity: [
+        "Aaの親は、Aかaのどちらかを子に渡す。",
+        "Aa×Aaでは、AA、Aa、Aa、aaの4通りになる。",
+        "表れ方は、丸：しわ＝3：1。"
+      ],
+      space: [
+        "満月は、太陽・地球・月の順にほぼ一直線になるときに見える。",
+        "地球から見ると、月の太陽に照らされた面が全部見える。",
+        "満月では、地球が太陽と月の間にある。"
+      ]
+    };
+
+    const spotNames = {
+      blackboard: "黒板",
+      cylinder: "メスシリンダー",
+      shelf: "薬品棚",
+      beaker: "ビーカー",
+      burner: "ガスバーナー",
+      microscope: "顕微鏡",
+      compass: "方位磁針",
+      geology: "地層ポスター",
+      circuit: "回路装置",
+      density: "金属片",
+      weather: "天気図カード",
+      heredity: "遺伝カード",
+      space: "天体模型",
+      door: "出口のドア"
+    };
+
+    const requiredItems = {
+      shelf: ["小さな鍵"],
+      beaker: ["BTB溶液"],
+      microscope: ["接眼レンズ"],
+      circuit: ["導線", "電池"]
+    };
+
+    document.querySelectorAll(".spot").forEach(button => {
+      button.addEventListener("click", () => {
+        const spot = button.dataset.spot;
+        handleSpot(spot);
+      });
+    });
+
+    document.getElementById("closeModal").addEventListener("click", closeModal);
+    document.getElementById("modalBack").addEventListener("click", event => {
+      if (event.target.id === "modalBack") closeModal();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      const ok = confirm("最初からやり直しますか？");
+      if (!ok) return;
+      localStorage.removeItem("rikaEscapeState");
+      state = structuredClone(defaultState);
+      saveState();
+      render();
+      setMessage("最初から始めます。まずは黒板を調べよう。");
+    });
+
+    document.getElementById("hintBtn").addEventListener("click", () => {
+      openInfo(
+        "blackboard",
+        "今のヒント",
+        `
+          <div class="question">
+            <p><strong>現在の目標</strong></p>
+            <p>${state.currentTarget}</p>
+            <p>迷ったら、まだ解決済みになっていない場所を調べよう。</p>
+          </div>
+        `
+      );
+    });
+
+    function handleSpot(spot) {
+      if (state.clear && spot !== "door") {
+        setMessage("すでに脱出成功している。もう一度遊ぶ場合は「最初から」を押そう。");
+        return;
+      }
+
+      switch (spot) {
+        case "blackboard":
+          openBlackboard();
+          break;
+        case "cylinder":
+          openCylinder();
+          break;
+        case "shelf":
+          openShelf();
+          break;
+        case "beaker":
+          openBeaker();
+          break;
+        case "burner":
+          openBurner();
+          break;
+        case "microscope":
+          openMicroscope();
+          break;
+        case "compass":
+          openCompass();
+          break;
+        case "geology":
+          openGeology();
+          break;
+        case "circuit":
+          openCircuit();
+          break;
+        case "density":
+          openDensity();
+          break;
+        case "weather":
+          openWeather();
+          break;
+        case "heredity":
+          openHeredity();
+          break;
+        case "space":
+          openSpace();
+          break;
+        case "door":
+          openDoor();
+          break;
+      }
+    }
+
+    function openBlackboard() {
+      state.solved.blackboard = true;
+      state.currentTarget = "メスシリンダーを調べて、体積の数字を手に入れよう。";
+      saveState();
+      render();
+
+      openInfo(
+        "blackboard",
+        "黒板",
+        `
+          <div class="question">
+            <p>黒板には、先生の文字でこう書かれている。</p>
+            <p><strong>「体積 → 色 → 倍率 → 電気」</strong></p>
+            <p>4つの数字をこの順番に並べると、出口のドアが開く。</p>
+            <p>まずは、理科室の中にある器具を調べよう。</p>
+          </div>
+        `
+      );
+      setMessage("黒板のルールを確認した。暗号は「体積 → 色 → 倍率 → 電気」の順番だ。");
+    }
+
+    function openCylinder() {
+      if (state.solved.cylinder) {
+        openInfo(
+          "cylinder",
+          "メスシリンダー",
+          `
+            <div class="question">
+              <p>液体の体積は38mLだった。</p>
+              <p>暗号「体積」の数字は、一の位の <strong>8</strong>。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "cylinder",
+        title: "メスシリンダー",
+        question: `
+          <p>メスシリンダーに液体が入っている。</p>
+          <p>液面の一番低いところは、30mLと40mLの間で、40mLより2目盛り下にある。</p>
+          <p><strong>液体の体積は何mLか。</strong></p>
+        `,
+        choices: [
+          "36mL",
+          "38mL",
+          "40mL",
+          "42mL"
+        ],
+        answer: 1,
+        correct: () => {
+          state.solved.cylinder = true;
+          state.codes.volume = "8";
+          addItem("小さな鍵");
+          state.currentTarget = "薬品棚を開けて、液体の性質を調べる道具を探そう。";
+          saveState();
+          render();
+          setMessage("メスシリンダーの目盛りを読んだ。暗号「体積」は8。小さな鍵も手に入れた。");
+        },
+        correctMessage: "正解。メスシリンダーは液面の一番低いところを読む。38mLなので、一の位の8を暗号に使う。小さな鍵を手に入れた。",
+        wrongMessage: "違う。目盛りは真横から見て、液面の一番低いところを読む。"
+      });
+    }
+
+    function openShelf() {
+      if (!hasItem("小さな鍵")) {
+        openInfo(
+          "shelf",
+          "薬品棚",
+          `
+            <div class="question">
+              <p>薬品棚には鍵がかかっている。</p>
+              <p>鍵があれば開けられそうだ。</p>
+            </div>
+          `
+        );
+        setMessage("薬品棚は開かない。どこかで鍵を手に入れる必要がある。");
+        return;
+      }
+
+      if (state.solved.shelf) {
+        openInfo(
+          "shelf",
+          "薬品棚",
+          `
+            <div class="question">
+              <p>棚の中には、古いメモが残っている。</p>
+              <p><strong>青は3、緑は5、黄は7</strong></p>
+              <p>BTB溶液の色と関係がありそうだ。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      state.solved.shelf = true;
+      addItem("BTB溶液");
+      state.currentTarget = "BTB溶液をビーカーの液体に使って、色の数字を見つけよう。";
+      saveState();
+      render();
+
+      openInfo(
+        "shelf",
+        "薬品棚",
+        `
+          <div class="question">
+            <p>小さな鍵で薬品棚が開いた。</p>
+            <p><strong>BTB溶液</strong>を手に入れた。</p>
+            <p>棚の中のメモには、こう書かれている。</p>
+            <p><strong>青は3、緑は5、黄は7</strong></p>
+          </div>
+        `
+      );
+      setMessage("薬品棚が開いた。BTB溶液と、色を数字に変えるメモを見つけた。");
+    }
+
+    function openBeaker() {
+      if (!hasItem("BTB溶液")) {
+        openInfo(
+          "beaker",
+          "ビーカー",
+          `
+            <div class="question">
+              <p>ビーカーには透明な液体が入っている。</p>
+              <p>このままでは、酸性・中性・アルカリ性のどれかはわからない。</p>
+            </div>
+          `
+        );
+        setMessage("ビーカーの液体を調べるには、性質を調べる薬品が必要だ。");
+        return;
+      }
+
+      if (state.solved.beaker) {
+        openInfo(
+          "beaker",
+          "ビーカー",
+          `
+            <div class="question">
+              <p>BTB溶液を入れると、液体は黄色になった。</p>
+              <p>棚のメモより、黄色は <strong>7</strong>。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "beaker",
+        title: "ビーカーとBTB溶液",
+        question: `
+          <p>ビーカーの液体にBTB溶液を入れると、<strong>黄色</strong>になった。</p>
+          <p><strong>この液体の性質は何か。</strong></p>
+        `,
+        choices: [
+          "酸性",
+          "中性",
+          "アルカリ性",
+          "金属"
+        ],
+        answer: 0,
+        correct: () => {
+          state.solved.beaker = true;
+          state.codes.color = "7";
+          state.currentTarget = "ガスバーナーの使い方を確認して、顕微鏡に必要な部品を探そう。";
+          saveState();
+          render();
+          setMessage("BTB溶液が黄色になった。棚のメモから、暗号「色」は7。");
+        },
+        correctMessage: "正解。BTB溶液は酸性で黄色になる。棚のメモでは黄色は7なので、暗号「色」は7。",
+        wrongMessage: "違う。BTB溶液は、酸性で黄色、中性で緑色、アルカリ性で青色になる。"
+      });
+    }
+
+    function openBurner() {
+      if (state.solved.burner) {
+        openInfo(
+          "burner",
+          "ガスバーナー",
+          `
+            <div class="question">
+              <p>ガスバーナーの使い方を確認し、引き出しから接眼レンズを見つけた。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "burner",
+        title: "ガスバーナー",
+        question: `
+          <p>ガスバーナーの近くに、安全確認カードがある。</p>
+          <p><strong>ガスバーナーを使い始めるときの手順として、最も適切なものはどれか。</strong></p>
+        `,
+        choices: [
+          "空気調節ねじを全開にしてから、元栓を開く",
+          "元栓を開き、マッチに火をつけ、ガス調節ねじを少し開く",
+          "ガス調節ねじを大きく開いてから、マッチを探す",
+          "炎が赤いまま実験を始める"
+        ],
+        answer: 1,
+        correct: () => {
+          state.solved.burner = true;
+          addItem("接眼レンズ");
+          state.currentTarget = "顕微鏡に接眼レンズをつけて、倍率の数字を求めよう。";
+          saveState();
+          render();
+          setMessage("ガスバーナーの安全な使い方を確認した。引き出しから接眼レンズを手に入れた。");
+        },
+        correctMessage: "正解。安全な手順を確認すると、机の引き出しが開いた。接眼レンズを手に入れた。",
+        wrongMessage: "違う。ガスを出しすぎたり、火をつける前にガスを大きく開いたりするのは危険。"
+      });
+    }
+
+    function openMicroscope() {
+      if (!hasItem("接眼レンズ")) {
+        openInfo(
+          "microscope",
+          "顕微鏡",
+          `
+            <div class="question">
+              <p>顕微鏡はあるが、接眼レンズが外れている。</p>
+              <p>レンズを見つければ使えそうだ。</p>
+            </div>
+          `
+        );
+        setMessage("顕微鏡には接眼レンズが必要だ。理科室の別の場所を調べよう。");
+        return;
+      }
+
+      if (state.solved.microscope) {
+        openInfo(
+          "microscope",
+          "顕微鏡",
+          `
+            <div class="question">
+              <p>接眼レンズ10倍、対物レンズ15倍。</p>
+              <p>倍率は150倍。暗号「倍率」は百の位の <strong>1</strong>。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "microscope",
+        title: "顕微鏡",
+        question: `
+          <p>顕微鏡に接眼レンズを取り付けた。</p>
+          <p>接眼レンズは10倍、対物レンズは15倍と書かれている。</p>
+          <p><strong>この顕微鏡の倍率は何倍か。</strong></p>
+        `,
+        choices: [
+          "25倍",
+          "50倍",
+          "150倍",
+          "250倍"
+        ],
+        answer: 2,
+        correct: () => {
+          state.solved.microscope = true;
+          state.codes.micro = "1";
+          state.currentTarget = "方位磁針と地層ポスターを調べて、回路に必要な道具を集めよう。";
+          saveState();
+          render();
+          setMessage("顕微鏡の倍率を計算した。150倍なので、暗号「倍率」は1。");
+        },
+        correctMessage: "正解。顕微鏡の倍率は、接眼レンズ×対物レンズ。10×15＝150倍。暗号には百の位の1を使う。",
+        wrongMessage: "違う。顕微鏡の倍率は、接眼レンズの倍率と対物レンズの倍率をかける。"
+      });
+    }
+
+    function openCompass() {
+      if (state.solved.compass) {
+        openInfo(
+          "compass",
+          "方位磁針",
+          `
+            <div class="question">
+              <p>方位磁針は北東を指していた。</p>
+              <p>N → E の順に棚のボタンを押すと、導線が出てきた。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "compass",
+        title: "方位磁針",
+        question: `
+          <p>方位磁針の針は、北東を指している。</p>
+          <p>近くの小さな箱には、N・E・S・Wのボタンがある。</p>
+          <p><strong>北東を表すには、どの順番で押せばよいか。</strong></p>
+        `,
+        choices: [
+          "N → E",
+          "S → W",
+          "E → S",
+          "W → N"
+        ],
+        answer: 0,
+        correct: () => {
+          state.solved.compass = true;
+          addItem("導線");
+          state.currentTarget = "地層ポスターを調べて、回路に必要な電池を探そう。";
+          saveState();
+          render();
+          setMessage("方位磁針の向きから箱を開けた。導線を手に入れた。");
+        },
+        correctMessage: "正解。北東は北と東の間なので、N → E。箱から導線が出てきた。",
+        wrongMessage: "違う。北東は、北と東の間の方角。"
+      });
+    }
+
+    function openGeology() {
+      if (state.solved.geology) {
+        openInfo(
+          "geology",
+          "地層ポスター",
+          `
+            <div class="question">
+              <p>ふつう、下の地層ほど古い。</p>
+              <p>一番下の地層の裏から電池を見つけた。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "geology",
+        title: "地層ポスター",
+        question: `
+          <p>地層ポスターには、上からA層、B層、C層の順に地層が描かれている。</p>
+          <p><strong>ふつう、最も古い地層はどれか。</strong></p>
+        `,
+        choices: [
+          "一番上のA層",
+          "真ん中のB層",
+          "一番下のC層",
+          "地層の上下では古さはわからない"
+        ],
+        answer: 2,
+        correct: () => {
+          state.solved.geology = true;
+          addItem("電池");
+          state.currentTarget = "導線と電池を使って、回路装置のライトをつけよう。";
+          saveState();
+          render();
+          setMessage("地層の上下関係を読んだ。一番下の地層の裏から電池を手に入れた。");
+        },
+        correctMessage: "正解。ふつう、下にある地層ほど古い。一番下のC層の裏から電池を手に入れた。",
+        wrongMessage: "違う。地層は、基本的には下にあるものほど古い。"
+      });
+    }
+
+    function openCircuit() {
+      if (!hasItem("導線") || !hasItem("電池")) {
+        openInfo(
+          "circuit",
+          "回路装置",
+          `
+            <div class="question">
+              <p>回路装置はあるが、まだ部品が足りない。</p>
+              <p>必要なもの：<strong>導線</strong>、<strong>電池</strong></p>
+            </div>
+          `
+        );
+        setMessage("回路を動かすには、導線と電池が必要だ。");
+        return;
+      }
+
+      if (state.solved.circuit) {
+        openInfo(
+          "circuit",
+          "回路装置",
+          `
+            <div class="question">
+              <p>電流計は直列、電圧計は並列につないだ。</p>
+              <p>ライトがつき、壁に数字 <strong>4</strong> が浮かび上がった。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "circuit",
+        title: "回路装置",
+        question: `
+          <p>導線と電池で回路をつなげられそうだ。</p>
+          <p>ライトをつけるには、電流計と電圧計のつなぎ方を正しく選ぶ必要がある。</p>
+          <p><strong>正しい組み合わせはどれか。</strong></p>
+        `,
+        choices: [
+          "電流計は直列、電圧計は並列",
+          "電流計は並列、電圧計は直列",
+          "電流計も電圧計も直列",
+          "電流計も電圧計も並列"
+        ],
+        answer: 0,
+        correct: () => {
+          state.solved.circuit = true;
+          state.codes.electric = "4";
+          state.currentTarget = "4つの暗号を黒板の順に並べ、出口のドアを開けよう。";
+          saveState();
+          render();
+          setMessage("回路が正しくつながり、ライトがついた。壁に数字4が見えた。暗号「電気」は4。");
+        },
+        correctMessage: "正解。電流計は直列、電圧計は並列につなぐ。ライトがつき、壁に数字4が見えた。",
+        wrongMessage: "違う。電流計は電流の通り道に入れる。電圧計は測りたい部分をはさむようにつなぐ。"
+      });
+    }
+
+    function openDensity() {
+      if (state.solved.density) {
+        openInfo(
+          "density",
+          "金属片",
+          `
+            <div class="question">
+              <p>質量54g、体積20cm³。</p>
+              <p>密度は 54 ÷ 20 = 2.7g/cm³。</p>
+              <p>アルミニウムに近い金属だった。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "density",
+        title: "金属片の追加ミッション",
+        question: `
+          <p>金属片の横にメモがある。</p>
+          <p>質量：54g　体積：20cm³</p>
+          <p><strong>この金属片の密度は何g/cm³か。</strong></p>
+        `,
+        choices: [
+          "0.37g/cm³",
+          "2.7g/cm³",
+          "34g/cm³",
+          "74g/cm³"
+        ],
+        answer: 1,
+        correct: () => {
+          state.solved.density = true;
+          saveState();
+          render();
+          setMessage("追加ミッション達成。密度は質量÷体積で求める。");
+        },
+        correctMessage: "正解。密度＝質量÷体積。54÷20＝2.7g/cm³。",
+        wrongMessage: "違う。密度は、質量÷体積で求める。"
+      });
+    }
+
+    function openWeather() {
+      if (state.solved.weather) {
+        openInfo(
+          "weather",
+          "天気図カード",
+          `
+            <div class="question">
+              <p>日本付近の低気圧では、風は反時計回りに中心へ吹き込む。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "weather",
+        title: "天気図カードの追加ミッション",
+        question: `
+          <p>天気図カードに低気圧が描かれている。</p>
+          <p><strong>日本付近の低気圧のまわりでは、風はおよそどのように吹くか。</strong></p>
+        `,
+        choices: [
+          "時計回りに外へ吹き出す",
+          "時計回りに中心へ吹き込む",
+          "反時計回りに中心へ吹き込む",
+          "まっすぐ北へだけ吹く"
+        ],
+        answer: 2,
+        correct: () => {
+          state.solved.weather = true;
+          saveState();
+          render();
+          setMessage("追加ミッション達成。低気圧の風の向きを確認した。");
+        },
+        correctMessage: "正解。日本付近の低気圧では、風は反時計回りに中心へ吹き込む。",
+        wrongMessage: "違う。低気圧では、風は中心に向かって吹き込む。北半球では反時計回り。"
+      });
+    }
+
+    function openHeredity() {
+      if (state.solved.heredity) {
+        openInfo(
+          "heredity",
+          "遺伝カード",
+          `
+            <div class="question">
+              <p>Aa×Aaでは、AA、Aa、Aa、aaの4通り。</p>
+              <p>丸い種子：しわの種子＝3：1。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "heredity",
+        title: "遺伝カードの追加ミッション",
+        question: `
+          <p>丸い種子をつくる遺伝子をA、しわの種子をつくる遺伝子をaとする。</p>
+          <p>Aはaに対して顕性とする。</p>
+          <p><strong>Aa×Aaでできる子の表れ方は、およそどれか。</strong></p>
+        `,
+        choices: [
+          "丸：しわ＝1：1",
+          "丸：しわ＝2：2",
+          "丸：しわ＝3：1",
+          "丸：しわ＝1：3"
+        ],
+        answer: 2,
+        correct: () => {
+          state.solved.heredity = true;
+          saveState();
+          render();
+          setMessage("追加ミッション達成。Aa×Aaでは、表れ方はおよそ3：1になる。");
+        },
+        correctMessage: "正解。AA、Aa、Aa、aaの4通りなので、表れ方は丸：しわ＝3：1。",
+        wrongMessage: "違う。Aaの親は、Aかaのどちらかを子に渡す。組み合わせ表を考えよう。"
+      });
+    }
+
+    function openSpace() {
+      if (state.solved.space) {
+        openInfo(
+          "space",
+          "天体模型",
+          `
+            <div class="question">
+              <p>満月では、太陽・地球・月の順にほぼ一直線になる。</p>
+            </div>
+          `
+        );
+        return;
+      }
+
+      askQuestion({
+        id: "space",
+        title: "天体模型の追加ミッション",
+        question: `
+          <p>太陽・地球・月の模型がある。</p>
+          <p><strong>満月に近い位置関係はどれか。</strong></p>
+        `,
+        choices: [
+          "太陽・月・地球の順に並ぶ",
+          "太陽・地球・月の順に並ぶ",
+          "地球・太陽・月の順に並ぶ",
+          "月・太陽・地球の順に並ぶ"
+        ],
+        answer: 1,
+        correct: () => {
+          state.solved.space = true;
+          saveState();
+          render();
+          setMessage("追加ミッション達成。満月のときの太陽・地球・月の位置関係を確認した。");
+        },
+        correctMessage: "正解。満月では、太陽・地球・月の順にほぼ一直線になる。",
+        wrongMessage: "違う。満月では、地球から見て月の明るい面がほぼ全部見える。"
+      });
+    }
+
+    function openDoor() {
+      const currentCode =
+        (state.codes.volume || "?") +
+        (state.codes.color || "?") +
+        (state.codes.micro || "?") +
+        (state.codes.electric || "?");
+
+      openInfo(
+        "door",
+        "出口のドア",
+        `
+          <div class="question">
+            <p>ドアには4桁のロックがある。</p>
+            <p>黒板の順番は、<strong>体積 → 色 → 倍率 → 電気</strong>。</p>
+            <p>現在の暗号メモ：<strong>${currentCode}</strong></p>
+            <div class="input-row">
+              <input class="lock-input" id="doorInput" type="text" maxlength="4" inputmode="numeric" placeholder="4桁">
+              <button class="action-btn" id="doorSubmit">ロックを開ける</button>
+            </div>
+          </div>
+        `
+      );
+
+      setTimeout(() => {
+        const input = document.getElementById("doorInput");
+        const submit = document.getElementById("doorSubmit");
+        input.focus();
+
+        submit.addEventListener("click", checkDoor);
+        input.addEventListener("keydown", event => {
+          if (event.key === "Enter") checkDoor();
+        });
+      }, 0);
+    }
+
+    function checkDoor() {
+      const input = document.getElementById("doorInput");
+      const value = input.value.trim();
+      const status = document.getElementById("modalStatus");
+
+      if (value === FINAL_CODE) {
+        state.clear = true;
+        state.solved.door = true;
+        state.currentTarget = "脱出成功。振り返りで、使った理科知識を確認しよう。";
+        saveState();
+        render();
+
+        document.getElementById("modalBody").innerHTML = `
+          <div class="clear-screen">
+            <h2>脱出成功</h2>
+            <p>ドアのロックが開いた。</p>
+            <p>今回の暗号は、黒板の順に並べて <strong>${FINAL_CODE}</strong> だった。</p>
+
+            <p><strong>使った理科知識</strong></p>
+            <ul class="review-list">
+              <li>メスシリンダーは、液面の一番低いところを読む。</li>
+              <li>BTB溶液は、酸性で黄色、中性で緑色、アルカリ性で青色になる。</li>
+              <li>顕微鏡の倍率は、接眼レンズの倍率×対物レンズの倍率で求める。</li>
+              <li>電流計は直列、電圧計は並列につなぐ。</li>
+              <li>方位磁針は北を基準に方角を考える。</li>
+              <li>ふつう、下にある地層ほど古い。</li>
+            </ul>
+          </div>
+        `;
+        status.className = "status";
+        status.textContent = "";
+        setMessage("脱出成功。最後に、どの場面でどの理科知識を使ったか振り返ろう。");
+      } else {
+        status.className = "status ng show";
+        status.textContent = "番号が違う。黒板の順番は「体積 → 色 → 倍率 → 電気」。暗号メモをもう一度確認しよう。";
+      }
+    }
+
+    function askQuestion(config) {
+      openBase(config.id, config.title);
+
+      const body = document.getElementById("modalBody");
+      body.innerHTML = `
+        <div class="question">${config.question}</div>
+        <div class="choices" id="choicesBox"></div>
+      `;
+
+      const choicesBox = document.getElementById("choicesBox");
+
+      config.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.className = "choice-btn";
+        button.textContent = choice;
+
+        button.addEventListener("click", () => {
+          const status = document.getElementById("modalStatus");
+
+          if (index === config.answer) {
+            config.correct();
+            status.className = "status ok show";
+            status.textContent = config.correctMessage;
+            document.querySelectorAll(".choice-btn").forEach(btn => {
+              btn.disabled = true;
+              btn.style.cursor = "default";
+            });
+          } else {
+            status.className = "status ng show";
+            status.textContent = config.wrongMessage;
+          }
+        });
+
+        choicesBox.appendChild(button);
+      });
+    }
+
+    function openInfo(id, title, html) {
+      openBase(id, title);
+      document.getElementById("modalBody").innerHTML = html;
+    }
+
+    function openBase(id, title) {
+      state.activeSpot = id;
+      saveState();
+
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").innerHTML = "";
+      document.getElementById("modalStatus").className = "status";
+      document.getElementById("modalStatus").textContent = "";
+
+      const hintBox = document.getElementById("modalHint");
+      hintBox.className = "hint-box";
+      hintBox.textContent = "";
+
+      const modalBack = document.getElementById("modalBack");
+      modalBack.classList.add("show");
+    }
+
+    function closeModal() {
+      document.getElementById("modalBack").classList.remove("show");
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeModal();
+    });
+
+    document.getElementById("modalBack").addEventListener("dblclick", () => {
+      const id = state.activeSpot || "blackboard";
+      showModalHint(id);
+    });
+
+    document.getElementById("hintBtn").addEventListener("contextmenu", event => {
+      event.preventDefault();
+    });
+
+    document.addEventListener("click", event => {
+      if (event.target.id === "hintBtn") return;
+    });
+
+    document.getElementById("modalBack").addEventListener("click", event => {
+      if (event.target.classList.contains("modal")) {
+        const id = state.activeSpot || "blackboard";
+        showModalHint(id);
+      }
+    });
+
+    function showModalHint(id) {
+      const list = hints[id] || hints.blackboard;
+      const current = state.hintIndex[id] || 0;
+      const next = Math.min(current, list.length - 1);
+
+      const hintBox = document.getElementById("modalHint");
+      hintBox.className = "hint-box show";
+      hintBox.innerHTML = `<strong>ヒント${next + 1}</strong><br>${list[next]}`;
+
+      state.hintIndex[id] = Math.min(current + 1, list.length - 1);
+      saveState();
+    }
+
+    function addItem(name) {
+      if (!state.items.includes(name)) {
+        state.items.push(name);
+      }
+    }
+
+    function hasItem(name) {
+      return state.items.includes(name);
+    }
+
+    function setMessage(text) {
+      document.getElementById("messageBox").innerHTML = text;
+    }
+
+    function render() {
+      renderInventory();
+      renderCodes();
+      renderSpots();
+
+      const solvedMain = [
+        "cylinder",
+        "shelf",
+        "beaker",
+        "burner",
+        "microscope",
+        "compass",
+        "geology",
+        "circuit"
+      ].filter(key => state.solved[key]).length;
+
+      document.getElementById("progressText").textContent =
+        `メイン進行 ${solvedMain}/8`;
+
+      document.getElementById("objectiveBox").textContent = state.currentTarget;
+    }
+
+    function renderInventory() {
+      const box = document.getElementById("inventoryBox");
+      box.innerHTML = "";
+
+      if (state.items.length === 0) {
+        box.innerHTML = `<div class="empty">まだ何も持っていない。</div>`;
+        return;
+      }
+
+      state.items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `<strong>${item}</strong><br><span>${itemInfo[item] || "手に入れた道具。"}</span>`;
+        box.appendChild(div);
+      });
+    }
+
+    function renderCodes() {
+      document.getElementById("codeVolume").textContent = state.codes.volume || "?";
+      document.getElementById("codeColor").textContent = state.codes.color || "?";
+      document.getElementById("codeMicro").textContent = state.codes.micro || "?";
+      document.getElementById("codeElectric").textContent = state.codes.electric || "?";
+    }
+
+    function renderSpots() {
+      document.querySelectorAll(".spot").forEach(button => {
+        const spot = button.dataset.spot;
+        const badge = button.querySelector(".badge");
+
+        button.classList.remove("solved", "locked");
+
+        if (state.solved[spot]) {
+          button.classList.add("solved");
+          badge.textContent = "解決済み";
+          return;
+        }
+
+        const needs = requiredItems[spot] || [];
+        const locked = needs.some(item => !hasItem(item));
+
+        if (locked) {
+          button.classList.add("locked");
+          badge.textContent = "道具不足";
+        } else if (spot === "door") {
+          badge.textContent = "ロック";
+        } else {
+          badge.textContent = "調べる";
+        }
+      });
+    }
+
+    function saveState() {
+      localStorage.setItem("rikaEscapeState", JSON.stringify(state));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem("rikaEscapeState");
+      if (!saved) return structuredClone(defaultState);
+
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          ...structuredClone(defaultState),
+          ...parsed,
+          items: parsed.items || [],
+          solved: parsed.solved || {},
+          codes: parsed.codes || {},
+          hintIndex: parsed.hintIndex || {}
+        };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
