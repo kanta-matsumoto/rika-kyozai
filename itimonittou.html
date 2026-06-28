@@ -1,0 +1,3199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中学理科クイズ 200問</title>
+  <style>
+    :root {
+      --sky1: #5fc2f2;
+      --sky2: #d8efff;
+      --navy: #12263a;
+      --navy2: #0b1d2d;
+      --blue: #0a63b7;
+      --red: #e9343f;
+      --red2: #c51d30;
+      --yellow: #ffd84a;
+      --green: #26a269;
+      --ink: #1f2937;
+      --muted: #667085;
+      --paper: #ffffff;
+      --line: #d7e0ea;
+      --shadow: 0 18px 40px rgba(3, 31, 52, 0.22);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(255,255,255,.65), transparent 9%),
+        radial-gradient(circle at 86% 28%, rgba(255,255,255,.45), transparent 12%),
+        linear-gradient(180deg, var(--sky1), var(--sky2));
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "⚗︎  🔬  🌱  ⚛︎  🧪  ✦  ⚡  🌙";
+      position: fixed;
+      inset: auto -40px 44px -40px;
+      text-align: center;
+      font-size: clamp(50px, 7vw, 90px);
+      letter-spacing: .35em;
+      color: rgba(255, 255, 255, .18);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .app { width: min(1200px, calc(100% - 28px)); margin: 0 auto; padding-bottom: 54px; position: relative; z-index: 1; }
+    header { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; padding: 15px 0 18px; }
+    .brand { display: flex; align-items: center; gap: 12px; color: #07375e; font-weight: 900; }
+    .brand-icon { width: 52px; height: 52px; border-radius: 16px; background: #fff; display: grid; place-items: center; font-size: 28px; box-shadow: 0 10px 22px rgba(8, 52, 91, .14); }
+    .brand-main { font-size: 22px; line-height: 1.05; }
+    .brand-sub { margin-top: 5px; font-size: 12px; color: #315d7d; font-weight: 800; }
+    .tabs { display: flex; min-width: 390px; overflow: hidden; border-radius: 18px; box-shadow: 0 10px 24px rgba(8, 52, 91, .22); }
+    .tab { padding: 17px 30px; color: #fff; font-size: 19px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 9px; }
+    .tab.subject { background: linear-gradient(180deg, #ef4c52, #c91d35); }
+    .tab.unit { background: linear-gradient(180deg, #0b4e78, #052a49); flex: 1; }
+    .status { justify-self: end; display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 18px; background: rgba(255,255,255,.93); border: 2px solid rgba(7,55,94,.08); box-shadow: 0 8px 20px rgba(10,61,98,.12); font-weight: 900; white-space: nowrap; }
+    .status-item { display: flex; align-items: center; gap: 7px; }
+    .status-big { font-size: 31px; line-height: 1; min-width: 42px; text-align: center; }
+    #timeLeft { color: #d82432; }
+    #score { color: #0a62b7; }
+    .divider { width: 1px; height: 32px; background: #d6dbe1; }
+    .mode-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; margin: 0 0 18px; }
+    .chip { border: 0; border-radius: 999px; padding: 10px 15px; font-weight: 900; background: rgba(255,255,255,.88); color: #0a3c68; box-shadow: 0 7px 16px rgba(8,52,91,.12); cursor: pointer; }
+    .chip.active { background: #0a63b7; color: #fff; }
+    .select, .search-input, .form-input, .form-textarea { border: 2px solid #d7e0ea; border-radius: 14px; background: #fff; padding: 11px 12px; font-weight: 800; color: var(--ink); font-size: 15px; }
+    .select { min-width: 220px; }
+    .question-area { margin: 7px auto 25px; display: grid; grid-template-columns: 160px 1fr 175px; gap: 18px; align-items: end; }
+    .mascot { display: flex; flex-direction: column; align-items: center; gap: 8px; user-select: none; }
+    .talk { background: #fff; color: #d82432; border-radius: 999px; font-weight: 900; padding: 10px 17px; box-shadow: 0 8px 18px rgba(8,52,91,.16); }
+    .talk.robot { color: #08345b; text-align: center; }
+    .tako { width: 118px; height: 118px; position: relative; filter: drop-shadow(0 10px 10px rgba(0,0,0,.16)); }
+    .tako .head { width: 108px; height: 86px; background: #ee5e66; border: 5px solid #151515; border-radius: 48% 48% 38% 38%; position: absolute; left: 5px; top: 10px; }
+    .tako .eye { width: 16px; height: 22px; background: #111; border-radius: 999px; position: absolute; top: 42px; }
+    .tako .eye.left { left: 32px; } .tako .eye.right { right: 32px; }
+    .tako .mouth { width: 34px; height: 24px; border-radius: 0 0 999px 999px; background: #111; position: absolute; top: 58px; left: 42px; }
+    .tako .leg { width: 28px; height: 34px; background: #ee5e66; border: 5px solid #151515; border-top: none; border-radius: 0 0 999px 999px; position: absolute; top: 80px; }
+    .tako .leg.one { left: 18px; } .tako .leg.two { left: 45px; } .tako .leg.three { right: 18px; }
+    .robot-face { width: 132px; height: 118px; border-radius: 32px; background: #fff; border: 5px solid #111; display: grid; place-items: center; box-shadow: 0 12px 20px rgba(0,0,0,.18); position: relative; }
+    .robot-screen { width: 88px; height: 52px; background: #15293a; border-radius: 20px; color: #fff; display: grid; place-items: center; font-size: 30px; font-weight: 900; }
+    .robot-face::before { content: ""; position: absolute; width: 54px; height: 22px; background: #0a62b7; border: 4px solid #111; border-radius: 20px; top: -22px; left: 39px; }
+    .question-card { background: rgba(255,255,255,.96); border-radius: 30px; box-shadow: 0 16px 30px rgba(8,52,91,.18); padding: 26px 32px; display: flex; align-items: center; gap: 26px; min-height: 106px; position: relative; }
+    .question-card::after { content: ""; position: absolute; right: 48px; bottom: -24px; border-left: 26px solid transparent; border-right: 8px solid transparent; border-top: 28px solid rgba(255,255,255,.96); }
+    .question-number { flex: 0 0 auto; font-weight: 900; color: #23384d; font-size: 19px; border-right: 2px solid #d5dce5; padding-right: 25px; }
+    .question-number strong { color: #0a62b7; font-size: 36px; margin: 0 4px; }
+    .question-text { font-weight: 900; font-size: clamp(19px, 2.2vw, 27px); line-height: 1.5; }
+    .quiz-panel { width: min(790px, 100%); margin: 0 auto; background: linear-gradient(180deg, rgba(255,255,255,.07), transparent), var(--navy); border: 3px solid rgba(255,255,255,.78); border-radius: 34px; box-shadow: var(--shadow); padding: 28px 34px 30px; }
+    .answers { display: grid; gap: 14px; }
+    .answer-btn { width: 100%; border: 0; border-radius: 999px; min-height: 64px; background: linear-gradient(180deg, #f44545, #cf2432); color: #fff; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 5px 0 #8e1521, 0 12px 18px rgba(0,0,0,.22); font-size: 23px; font-weight: 900; cursor: pointer; display: grid; grid-template-columns: 56px 1fr 34px; align-items: center; gap: 12px; padding: 8px 22px 12px 10px; transition: transform .12s ease, filter .12s ease, opacity .12s ease; }
+    .answer-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.04); }
+    .answer-btn:disabled { cursor: default; opacity: .82; }
+    .answer-btn.hidden-choice { display: none; }
+    .answer-btn.correct { background: linear-gradient(180deg, #31c77a, #158b51); box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 5px 0 #0f6039, 0 12px 18px rgba(0,0,0,.22); }
+    .answer-btn.wrong { background: linear-gradient(180deg, #707785, #404855); box-shadow: inset 0 2px 0 rgba(255,255,255,.22), 0 5px 0 #252a31, 0 12px 18px rgba(0,0,0,.2); }
+    .choice-number { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.14); border: 2px solid rgba(255,255,255,.48); font-size: 23px; }
+    .choice-arrow { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #d82432; font-weight: 900; }
+    .lifeline-title { color: #fff; display: flex; align-items: center; justify-content: center; gap: 14px; margin: 26px 0 15px; font-size: 20px; font-weight: 900; letter-spacing: .06em; }
+    .lifeline-title::before, .lifeline-title::after { content: ""; height: 2px; flex: 1; border-top: 2px dotted rgba(255,255,255,.42); }
+    .lifelines { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .lifeline-btn { min-height: 86px; border: 0; border-radius: 18px; background: linear-gradient(180deg, #ffe16c, #ffb51d); color: #1a2430; font-weight: 900; cursor: pointer; display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 12px; padding: 12px 16px; box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 5px 0 #b87808, 0 12px 16px rgba(0,0,0,.22); }
+    .lifeline-btn:disabled { opacity: .46; cursor: default; }
+    .lifeline-icon { width: 52px; height: 52px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 25px; border: 3px solid rgba(0,0,0,.12); }
+    .lifeline-main { font-size: 18px; line-height: 1.2; }
+    .lifeline-sub { margin-top: 5px; font-size: 13px; color: #553600; }
+    .result-box { margin-top: 21px; background: rgba(255,255,255,.94); border-radius: 20px; padding: 17px 19px; display: none; line-height: 1.7; font-weight: 800; }
+    .result-box.show { display: block; }
+    .result-title { font-size: 21px; margin-bottom: 4px; }
+    .correct-text { color: #13824e; } .wrong-text { color: #c72432; }
+    .explanation { color: #344054; font-size: 15px; font-weight: 700; }
+    .bottom-actions { margin-top: 23px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .nav-btn { min-height: 60px; border-radius: 999px; border: 2px solid rgba(255,255,255,.9); font-size: 19px; font-weight: 900; cursor: pointer; transition: transform .12s ease, filter .12s ease; }
+    .nav-btn:hover { transform: translateY(-2px); filter: brightness(1.03); }
+    .next-btn { background: #fff; color: #0a62b7; box-shadow: 0 10px 18px rgba(0,0,0,.18); }
+    .reset-btn { background: transparent; color: #fff; }
+    .finish-card, .admin-card { display: none; width: min(1040px, 100%); margin: 0 auto; background: rgba(255,255,255,.96); border-radius: 32px; padding: 30px; box-shadow: var(--shadow); }
+    .finish-card.show, .admin-card.show { display: block; }
+    .finish-card { text-align: center; width: min(790px, 100%); }
+    .finish-title { font-size: 32px; font-weight: 900; color: #08345b; margin-bottom: 12px; }
+    .finish-score { font-size: 58px; font-weight: 900; color: #0a62b7; margin: 10px 0; }
+    .finish-message { color: #475467; font-weight: 800; line-height: 1.8; margin-bottom: 24px; }
+    .admin-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; flex-wrap: wrap; border-bottom: 2px solid var(--line); padding-bottom: 18px; margin-bottom: 20px; }
+    .admin-title { font-size: 25px; font-weight: 900; color: #07375e; }
+    .admin-note { color: #667085; font-weight: 700; line-height: 1.7; max-width: 720px; font-size: 14px; }
+    .admin-grid { display: grid; grid-template-columns: 360px 1fr; gap: 22px; align-items: start; }
+    .question-list { background: #f7fbff; border: 2px solid var(--line); border-radius: 20px; padding: 14px; max-height: 610px; overflow: auto; }
+    .list-meta { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-weight: 900; color: #315d7d; }
+    .q-item { width: 100%; text-align: left; border: 2px solid transparent; background: #fff; border-radius: 14px; padding: 11px 12px; margin-bottom: 9px; cursor: pointer; font-weight: 800; color: #243447; box-shadow: 0 5px 12px rgba(7,55,94,.08); }
+    .q-item small { display: block; color: #667085; margin-top: 3px; font-weight: 700; }
+    .q-item.active { border-color: #0a63b7; background: #eaf5ff; }
+    .editor { background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 18px; }
+    .form-row { margin-bottom: 14px; }
+    .form-row label { display: block; font-weight: 900; margin-bottom: 7px; color: #243447; }
+    .form-input, .form-textarea, .form-select { width: 100%; }
+    .form-textarea { min-height: 82px; resize: vertical; }
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .admin-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .action-btn { border: 0; border-radius: 14px; padding: 12px 16px; font-weight: 900; cursor: pointer; }
+    .primary { background: #0a63b7; color: #fff; }
+    .success { background: #158b51; color: #fff; }
+    .danger { background: #d82432; color: #fff; }
+    .light { background: #eef4fb; color: #07375e; }
+    .import-area { margin-top: 18px; border-top: 2px dashed var(--line); padding-top: 16px; }
+    .import-area textarea { width: 100%; min-height: 100px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #102538; color: #fff; padding: 12px 18px; border-radius: 999px; font-weight: 900; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 50; }
+    .toast.show { opacity: 1; }
+    .contact { position: fixed; right: 24px; bottom: 22px; background: rgba(255,255,255,.94); color: #0a62b7; border: 0; border-radius: 999px; padding: 15px 21px; font-weight: 900; font-size: 15px; box-shadow: 0 12px 26px rgba(0,0,0,.2); }
+    @media (max-width: 1020px) {
+      header { grid-template-columns: 1fr; } .tabs, .status { justify-self: stretch; } .tabs { min-width: 0; }
+      .question-area { grid-template-columns: 1fr; } .mascot { display: none; }
+      .admin-grid { grid-template-columns: 1fr; } .question-list { max-height: 380px; }
+    }
+    @media (max-width: 650px) {
+      .app { width: min(100% - 20px, 1200px); } .tab { padding: 13px 15px; font-size: 16px; }
+      .status { flex-wrap: wrap; justify-content: center; } .divider { display: none; }
+      .question-card { display: block; padding: 22px; } .question-number { border-right: 0; border-bottom: 2px solid #d5dce5; padding: 0 0 11px; margin-bottom: 13px; }
+      .quiz-panel { padding: 22px 17px; border-radius: 26px; } .answer-btn { grid-template-columns: 46px 1fr 26px; font-size: 18px; min-height: 58px; padding-right: 13px; }
+      .choice-number { width: 36px; height: 36px; } .lifelines, .bottom-actions, .choice-grid { grid-template-columns: 1fr; } .contact { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">📖</div>
+        <div><div class="brand-main">中学理科クイズ</div><div class="brand-sub">200問から出題・編集もできる</div></div>
+      </div>
+      <div class="tabs"><div class="tab subject">⚗️ 理科</div><div class="tab unit" id="unitName">全範囲</div></div>
+      <div class="status">
+        <div class="status-item"><span>⏱️ のこり</span><span class="status-big" id="timeLeft">32</span><span>秒</span></div>
+        <div class="divider"></div>
+        <div class="status-item"><span>⭐ 得点</span><span class="status-big" id="score">0</span><span>点</span></div>
+      </div>
+    </header>
+
+    <div class="mode-row">
+      <button class="chip active" id="quizModeBtn">クイズ</button>
+      <button class="chip" id="adminModeBtn">問題を追加・編集</button>
+      <select class="select" id="unitFilter"></select>
+      <button class="chip" id="shuffleBtn">ランダム出題</button>
+      <span class="chip" id="countChip">200問</span>
+    </div>
+
+    <section id="quizView">
+      <section class="question-area" id="questionArea">
+        <div class="mascot"><div class="talk">考えよう！</div><div class="tako" aria-hidden="true"><div class="head"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div><div class="leg one"></div><div class="leg two"></div><div class="leg three"></div></div></div>
+        <div class="question-card"><div class="question-number">第<strong id="questionNumber">1</strong>問</div><div class="question-text" id="questionText">問題文</div></div>
+        <div class="mascot"><div class="talk robot">じっくり<br>考えてみよう！</div><div class="robot-face" aria-hidden="true"><div class="robot-screen">⌒‿⌒</div></div></div>
+      </section>
+
+      <main class="quiz-panel" id="quizPanel">
+        <div class="answers" id="answers"></div>
+        <div class="lifeline-title">✨ おたすけアイテム ✨</div>
+        <div class="lifelines">
+          <button class="lifeline-btn" id="fiftyBtn"><div class="lifeline-icon">②</div><div><div class="lifeline-main">2択にしてあげる！</div><div class="lifeline-sub" id="fiftyCount">残り2回使えるよ</div></div></button>
+          <button class="lifeline-btn" id="stopBtn"><div class="lifeline-icon">⏱️</div><div><div class="lifeline-main">ストップしてあげる！</div><div class="lifeline-sub" id="stopCount">残り4回使えるよ！</div></div></button>
+        </div>
+        <div class="result-box" id="resultBox"><div class="result-title" id="resultTitle"></div><div class="explanation" id="explanation"></div></div>
+        <div class="bottom-actions"><button class="nav-btn next-btn" id="nextBtn">次の問題　›</button><button class="nav-btn reset-btn" id="resetBtn">↻ 最初から</button></div>
+      </main>
+
+      <section class="finish-card" id="finishCard"><div class="finish-title">クイズ終了</div><div class="finish-score" id="finalScore">0点</div><div class="finish-message" id="finishMessage">おつかれさまでした。</div><button class="nav-btn next-btn" id="restartBtn">もう一度挑戦する</button></section>
+    </section>
+
+    <section class="admin-card" id="adminView">
+      <div class="admin-head">
+        <div><div class="admin-title">問題管理</div><div class="admin-note">追加・編集・削除した内容は、この端末のブラウザに保存されます。GitHub Pages上で全員に同じ問題を配る場合は、エクスポートしたJSONを使ってコード内の初期問題を書き換えてください。</div></div>
+        <div class="admin-actions"><button class="action-btn light" id="backToQuizBtn">クイズに戻る</button><button class="action-btn primary" id="newQuestionBtn">新規作成</button></div>
+      </div>
+      <div class="admin-grid">
+        <div class="question-list">
+          <input class="search-input" id="adminSearch" placeholder="問題文・単元で検索" />
+          <div class="list-meta"><span id="adminCount">0問</span><span>クリックで編集</span></div>
+          <div id="questionList"></div>
+        </div>
+        <div class="editor">
+          <div class="form-row"><label>単元</label><input class="form-input" id="editUnit" placeholder="例：植物のつくり" /></div>
+          <div class="form-row"><label>問題文</label><textarea class="form-textarea" id="editQuestion" placeholder="問題文を入力"></textarea></div>
+          <div class="choice-grid">
+            <div class="form-row"><label>選択肢1</label><input class="form-input" id="choice0" /></div>
+            <div class="form-row"><label>選択肢2</label><input class="form-input" id="choice1" /></div>
+            <div class="form-row"><label>選択肢3</label><input class="form-input" id="choice2" /></div>
+            <div class="form-row"><label>選択肢4</label><input class="form-input" id="choice3" /></div>
+          </div>
+          <div class="form-row"><label>正解</label><select class="select form-select" id="editAnswer"><option value="0">選択肢1</option><option value="1">選択肢2</option><option value="2">選択肢3</option><option value="3">選択肢4</option></select></div>
+          <div class="form-row"><label>解説</label><textarea class="form-textarea" id="editExplanation" placeholder="解説を入力"></textarea></div>
+          <div class="admin-actions"><button class="action-btn success" id="saveQuestionBtn">保存</button><button class="action-btn danger" id="deleteQuestionBtn">削除</button><button class="action-btn light" id="clearFormBtn">入力をクリア</button></div>
+          <div class="import-area">
+            <div class="form-row"><label>インポート・エクスポート用JSON</label><textarea class="form-textarea" id="jsonArea" placeholder="エクスポートするとここにJSONが出ます。インポートする場合はここに貼ります。"></textarea></div>
+            <div class="admin-actions"><button class="action-btn primary" id="exportBtn">JSONをエクスポート</button><button class="action-btn success" id="importBtn">JSONをインポート</button><button class="action-btn danger" id="resetDefaultBtn">初期200問に戻す</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <button class="contact">✉ CONTACT</button>
+  <div class="toast" id="toast">保存しました</div>
+
+  <script>
+    const DEFAULT_QUESTIONS = [
+  {
+    "id": "q001",
+    "unit": "植物のつくり",
+    "question": "双子葉類の茎の断面では、維管束はどのように並んでいるか。",
+    "choices": [
+      "輪のように並ぶ",
+      "バラバラに散らばる",
+      "中心に1本だけある",
+      "外側にはない"
+    ],
+    "answer": 0,
+    "explanation": "双子葉類の茎では、維管束が輪状に並びます。"
+  },
+  {
+    "id": "q002",
+    "unit": "植物のつくり",
+    "question": "単子葉類の茎の断面では、維管束はどのように並んでいるか。",
+    "choices": [
+      "輪のように並ぶ",
+      "バラバラに散らばる",
+      "形成層だけが並ぶ",
+      "中心に集まる"
+    ],
+    "answer": 1,
+    "explanation": "単子葉類の茎では、維管束が散らばって見えます。"
+  },
+  {
+    "id": "q003",
+    "unit": "植物のつくり",
+    "question": "根で水や水に溶けた無機養分を吸収する部分はどれか。",
+    "choices": [
+      "気孔",
+      "根毛",
+      "葉脈",
+      "子房"
+    ],
+    "answer": 1,
+    "explanation": "根毛は表面積を大きくし、水や無機養分を吸収しやすくします。"
+  },
+  {
+    "id": "q004",
+    "unit": "植物のつくり",
+    "question": "水や水に溶けた無機養分が通る管はどれか。",
+    "choices": [
+      "道管",
+      "師管",
+      "気孔",
+      "胚珠"
+    ],
+    "answer": 0,
+    "explanation": "道管は根から吸収した水や無機養分を運びます。"
+  },
+  {
+    "id": "q005",
+    "unit": "植物のつくり",
+    "question": "葉でつくられた養分が通る管はどれか。",
+    "choices": [
+      "道管",
+      "師管",
+      "根毛",
+      "柱頭"
+    ],
+    "answer": 1,
+    "explanation": "師管は葉でつくられた養分を植物体の各部へ運びます。"
+  },
+  {
+    "id": "q006",
+    "unit": "植物のつくり",
+    "question": "蒸散が主に行われる小さな穴はどれか。",
+    "choices": [
+      "気孔",
+      "維管束",
+      "胚珠",
+      "根毛"
+    ],
+    "answer": 0,
+    "explanation": "気孔から水蒸気が出ていくはたらきを蒸散といいます。"
+  },
+  {
+    "id": "q007",
+    "unit": "植物のつくり",
+    "question": "光合成で主に使われる気体はどれか。",
+    "choices": [
+      "酸素",
+      "二酸化炭素",
+      "窒素",
+      "水素"
+    ],
+    "answer": 1,
+    "explanation": "光合成では二酸化炭素と水を材料に、デンプンなどをつくります。"
+  },
+  {
+    "id": "q008",
+    "unit": "植物のつくり",
+    "question": "光合成で主に発生する気体はどれか。",
+    "choices": [
+      "二酸化炭素",
+      "酸素",
+      "アンモニア",
+      "水素"
+    ],
+    "answer": 1,
+    "explanation": "光合成では酸素が発生します。"
+  },
+  {
+    "id": "q009",
+    "unit": "植物のつくり",
+    "question": "葉緑体を多く含み、光合成がさかんな部分はどれか。",
+    "choices": [
+      "葉",
+      "根毛",
+      "花粉",
+      "種子"
+    ],
+    "answer": 0,
+    "explanation": "葉には葉緑体が多く、光合成がさかんに行われます。"
+  },
+  {
+    "id": "q010",
+    "unit": "植物のつくり",
+    "question": "ヨウ素液で青紫色に変化する物質はどれか。",
+    "choices": [
+      "デンプン",
+      "タンパク質",
+      "脂肪",
+      "食塩"
+    ],
+    "answer": 0,
+    "explanation": "ヨウ素液はデンプンの検出に使います。"
+  },
+  {
+    "id": "q011",
+    "unit": "植物のつくり",
+    "question": "裸子植物の特徴として正しいものはどれか。",
+    "choices": [
+      "胚珠が子房に包まれる",
+      "胚珠がむき出しになっている",
+      "花をまったくつくらない",
+      "維管束がない"
+    ],
+    "answer": 1,
+    "explanation": "裸子植物では胚珠が子房に包まれず、むき出しです。"
+  },
+  {
+    "id": "q012",
+    "unit": "植物のつくり",
+    "question": "被子植物の特徴として正しいものはどれか。",
+    "choices": [
+      "胚珠が子房に包まれている",
+      "胞子でふえるだけである",
+      "根・茎・葉がない",
+      "維管束がない"
+    ],
+    "answer": 0,
+    "explanation": "被子植物では胚珠が子房の中にあります。"
+  },
+  {
+    "id": "q013",
+    "unit": "植物のつくり",
+    "question": "花粉が柱頭につくことを何というか。",
+    "choices": [
+      "受粉",
+      "受精",
+      "発芽",
+      "蒸散"
+    ],
+    "answer": 0,
+    "explanation": "花粉がめしべの柱頭につくことを受粉といいます。"
+  },
+  {
+    "id": "q014",
+    "unit": "植物のつくり",
+    "question": "受精後、胚珠は何になるか。",
+    "choices": [
+      "果実",
+      "種子",
+      "花粉",
+      "子房"
+    ],
+    "answer": 1,
+    "explanation": "受精後、胚珠は種子になります。"
+  },
+  {
+    "id": "q015",
+    "unit": "植物のつくり",
+    "question": "受精後、子房は何になるか。",
+    "choices": [
+      "種子",
+      "果実",
+      "葉",
+      "根"
+    ],
+    "answer": 1,
+    "explanation": "受精後、子房は果実になります。"
+  },
+  {
+    "id": "q016",
+    "unit": "植物のつくり",
+    "question": "双子葉類の葉脈に多い形はどれか。",
+    "choices": [
+      "平行脈",
+      "網状脈",
+      "輪状脈",
+      "放射脈だけ"
+    ],
+    "answer": 1,
+    "explanation": "双子葉類の葉脈は網目状に広がる網状脈が多いです。"
+  },
+  {
+    "id": "q017",
+    "unit": "植物のつくり",
+    "question": "単子葉類の葉脈に多い形はどれか。",
+    "choices": [
+      "網状脈",
+      "平行脈",
+      "星形脈",
+      "輪状脈"
+    ],
+    "answer": 1,
+    "explanation": "単子葉類の葉脈は平行に並ぶ平行脈が多いです。"
+  },
+  {
+    "id": "q018",
+    "unit": "植物のつくり",
+    "question": "蒸散のはたらきとして適切なものはどれか。",
+    "choices": [
+      "水の吸い上げを助ける",
+      "花粉をつくる",
+      "種子を休眠させる",
+      "土を酸性にする"
+    ],
+    "answer": 0,
+    "explanation": "蒸散によって植物体内の水の移動が助けられます。"
+  },
+  {
+    "id": "q019",
+    "unit": "植物のつくり",
+    "question": "シダ植物のふえ方として正しいものはどれか。",
+    "choices": [
+      "種子でふえる",
+      "胞子でふえる",
+      "花粉でふえる",
+      "果実でふえる"
+    ],
+    "answer": 1,
+    "explanation": "シダ植物は胞子でふえます。"
+  },
+  {
+    "id": "q020",
+    "unit": "植物のつくり",
+    "question": "コケ植物の特徴として正しいものはどれか。",
+    "choices": [
+      "維管束が発達している",
+      "根・茎・葉の区別がはっきりしない",
+      "種子をつくる",
+      "花を咲かせる"
+    ],
+    "answer": 1,
+    "explanation": "コケ植物は根・茎・葉の区別がはっきりせず、胞子でふえます。"
+  },
+  {
+    "id": "q021",
+    "unit": "動物のからだ",
+    "question": "消化酵素アミラーゼが主に分解する物質はどれか。",
+    "choices": [
+      "デンプン",
+      "脂肪",
+      "タンパク質",
+      "食塩"
+    ],
+    "answer": 0,
+    "explanation": "アミラーゼはデンプンを糖に分解します。"
+  },
+  {
+    "id": "q022",
+    "unit": "動物のからだ",
+    "question": "タンパク質の消化に関係が深い消化液はどれか。",
+    "choices": [
+      "胃液",
+      "だ液",
+      "胆汁",
+      "水"
+    ],
+    "answer": 0,
+    "explanation": "胃液にはタンパク質の消化に関わる酵素が含まれます。"
+  },
+  {
+    "id": "q023",
+    "unit": "動物のからだ",
+    "question": "胆汁のはたらきとして正しいものはどれか。",
+    "choices": [
+      "脂肪を細かくする",
+      "デンプンを糖にする",
+      "酸素を運ぶ",
+      "水を吸収する"
+    ],
+    "answer": 0,
+    "explanation": "胆汁は脂肪を細かくし、消化を助けます。"
+  },
+  {
+    "id": "q024",
+    "unit": "動物のからだ",
+    "question": "小腸の内側にある、栄養分を吸収しやすくする小さな突起はどれか。",
+    "choices": [
+      "柔毛",
+      "気孔",
+      "肺胞",
+      "関節"
+    ],
+    "answer": 0,
+    "explanation": "小腸の柔毛は表面積を大きくし、栄養分を吸収しやすくします。"
+  },
+  {
+    "id": "q025",
+    "unit": "動物のからだ",
+    "question": "血液中で酸素を運ぶ成分はどれか。",
+    "choices": [
+      "赤血球",
+      "白血球",
+      "血小板",
+      "血しょう"
+    ],
+    "answer": 0,
+    "explanation": "赤血球のヘモグロビンが酸素を運びます。"
+  },
+  {
+    "id": "q026",
+    "unit": "動物のからだ",
+    "question": "体内に入った細菌などを攻撃する血液成分はどれか。",
+    "choices": [
+      "赤血球",
+      "白血球",
+      "血小板",
+      "血しょう"
+    ],
+    "answer": 1,
+    "explanation": "白血球は体内に入った異物を攻撃します。"
+  },
+  {
+    "id": "q027",
+    "unit": "動物のからだ",
+    "question": "出血したとき血を固めるはたらきがあるものはどれか。",
+    "choices": [
+      "血小板",
+      "赤血球",
+      "白血球",
+      "リンパ液"
+    ],
+    "answer": 0,
+    "explanation": "血小板は血液を固めることに関係します。"
+  },
+  {
+    "id": "q028",
+    "unit": "動物のからだ",
+    "question": "心臓から全身へ血液を送り出す血管はどれか。",
+    "choices": [
+      "動脈",
+      "静脈",
+      "毛細血管",
+      "リンパ管"
+    ],
+    "answer": 0,
+    "explanation": "動脈は心臓から出る血液が流れる血管です。"
+  },
+  {
+    "id": "q029",
+    "unit": "動物のからだ",
+    "question": "全身から心臓へ血液を戻す血管はどれか。",
+    "choices": [
+      "動脈",
+      "静脈",
+      "毛細血管",
+      "肺胞"
+    ],
+    "answer": 1,
+    "explanation": "静脈は心臓へ戻る血液が流れる血管です。"
+  },
+  {
+    "id": "q030",
+    "unit": "動物のからだ",
+    "question": "肺で気体交換が行われる小さな袋状の部分はどれか。",
+    "choices": [
+      "肺胞",
+      "気孔",
+      "柔毛",
+      "横隔膜"
+    ],
+    "answer": 0,
+    "explanation": "肺胞のまわりには毛細血管があり、酸素と二酸化炭素の交換が行われます。"
+  },
+  {
+    "id": "q031",
+    "unit": "動物のからだ",
+    "question": "ヒトの呼吸で体内に取り入れる気体は主にどれか。",
+    "choices": [
+      "二酸化炭素",
+      "酸素",
+      "窒素だけ",
+      "水素"
+    ],
+    "answer": 1,
+    "explanation": "呼吸では酸素を取り入れ、二酸化炭素を出します。"
+  },
+  {
+    "id": "q032",
+    "unit": "動物のからだ",
+    "question": "刺激を受け取る器官を何というか。",
+    "choices": [
+      "感覚器官",
+      "運動器官",
+      "消化器官",
+      "排出器官"
+    ],
+    "answer": 0,
+    "explanation": "目、耳、鼻、舌、皮ふなどは感覚器官です。"
+  },
+  {
+    "id": "q033",
+    "unit": "動物のからだ",
+    "question": "神経系で、脳とせきずいを合わせて何というか。",
+    "choices": [
+      "中枢神経",
+      "末しょう神経",
+      "感覚神経",
+      "運動神経"
+    ],
+    "answer": 0,
+    "explanation": "脳とせきずいを中枢神経といいます。"
+  },
+  {
+    "id": "q034",
+    "unit": "動物のからだ",
+    "question": "反射の例として最も適切なものはどれか。",
+    "choices": [
+      "熱いものに触れて手を引っこめる",
+      "昼食の献立を考える",
+      "計算問題を解く",
+      "音楽を覚える"
+    ],
+    "answer": 0,
+    "explanation": "反射は意識とは関係なくすばやく起こる反応です。"
+  },
+  {
+    "id": "q035",
+    "unit": "動物のからだ",
+    "question": "骨と骨をつないでいる部分はどれか。",
+    "choices": [
+      "関節",
+      "筋肉",
+      "肺胞",
+      "柔毛"
+    ],
+    "answer": 0,
+    "explanation": "関節は骨と骨がつながる部分です。"
+  },
+  {
+    "id": "q036",
+    "unit": "動物のからだ",
+    "question": "筋肉が骨を動かすために骨についている部分はどれか。",
+    "choices": [
+      "けん",
+      "気管",
+      "小腸",
+      "腎臓"
+    ],
+    "answer": 0,
+    "explanation": "筋肉はけんによって骨についています。"
+  },
+  {
+    "id": "q037",
+    "unit": "動物のからだ",
+    "question": "尿をつくる器官はどれか。",
+    "choices": [
+      "腎臓",
+      "肝臓",
+      "肺",
+      "胃"
+    ],
+    "answer": 0,
+    "explanation": "腎臓は血液中の不要物をこし取り、尿をつくります。"
+  },
+  {
+    "id": "q038",
+    "unit": "動物のからだ",
+    "question": "恒温動物の説明として正しいものはどれか。",
+    "choices": [
+      "外界の温度に関係なく体温をほぼ一定に保つ",
+      "体温が必ず0℃になる",
+      "水中でしか生活できない",
+      "背骨をもたない"
+    ],
+    "answer": 0,
+    "explanation": "鳥類や哺乳類は恒温動物です。"
+  },
+  {
+    "id": "q039",
+    "unit": "動物のからだ",
+    "question": "魚類の呼吸器官はどれか。",
+    "choices": [
+      "えら",
+      "肺",
+      "気門",
+      "皮ふだけ"
+    ],
+    "answer": 0,
+    "explanation": "魚類は主にえらで水中の酸素を取り入れます。"
+  },
+  {
+    "id": "q040",
+    "unit": "動物のからだ",
+    "question": "外骨格をもち、体とあしに節がある動物のなかまはどれか。",
+    "choices": [
+      "節足動物",
+      "軟体動物",
+      "魚類",
+      "両生類"
+    ],
+    "answer": 0,
+    "explanation": "昆虫やエビ、カニなどは節足動物です。"
+  },
+  {
+    "id": "q041",
+    "unit": "細胞・遺伝",
+    "question": "植物細胞にあり、動物細胞にはないつくりとして正しいものはどれか。",
+    "choices": [
+      "細胞壁",
+      "核",
+      "細胞膜",
+      "細胞質"
+    ],
+    "answer": 0,
+    "explanation": "植物細胞には細胞壁があります。"
+  },
+  {
+    "id": "q042",
+    "unit": "細胞・遺伝",
+    "question": "光合成を行う細胞内のつくりはどれか。",
+    "choices": [
+      "葉緑体",
+      "核",
+      "液胞",
+      "細胞膜"
+    ],
+    "answer": 0,
+    "explanation": "葉緑体で光合成が行われます。"
+  },
+  {
+    "id": "q043",
+    "unit": "細胞・遺伝",
+    "question": "細胞の活動を調節し、遺伝子を含む部分はどれか。",
+    "choices": [
+      "核",
+      "細胞壁",
+      "液胞",
+      "細胞膜"
+    ],
+    "answer": 0,
+    "explanation": "核には遺伝子が含まれ、細胞のはたらきを調節します。"
+  },
+  {
+    "id": "q044",
+    "unit": "細胞・遺伝",
+    "question": "生物のからだが細胞でできていることを最初に観察した人物として有名なのは誰か。",
+    "choices": [
+      "フック",
+      "メンデル",
+      "ニュートン",
+      "ダーウィン"
+    ],
+    "answer": 0,
+    "explanation": "フックはコルクを観察し、細胞という語を使いました。"
+  },
+  {
+    "id": "q045",
+    "unit": "細胞・遺伝",
+    "question": "体細胞分裂で、分裂前後の染色体の数はどうなるか。",
+    "choices": [
+      "同じになる",
+      "半分になる",
+      "2倍になる",
+      "なくなる"
+    ],
+    "answer": 0,
+    "explanation": "体細胞分裂では、分裂後の細胞も同じ染色体数になります。"
+  },
+  {
+    "id": "q046",
+    "unit": "細胞・遺伝",
+    "question": "生殖細胞ができるとき、染色体の数はどうなるか。",
+    "choices": [
+      "半分になる",
+      "2倍になる",
+      "変わらない",
+      "0になる"
+    ],
+    "answer": 0,
+    "explanation": "減数分裂によって、卵や精子の染色体数は半分になります。"
+  },
+  {
+    "id": "q047",
+    "unit": "細胞・遺伝",
+    "question": "親から子へ伝わる形や性質を何というか。",
+    "choices": [
+      "形質",
+      "蒸散",
+      "凝結",
+      "抵抗"
+    ],
+    "answer": 0,
+    "explanation": "親から子へ伝わる特徴を形質といいます。"
+  },
+  {
+    "id": "q048",
+    "unit": "細胞・遺伝",
+    "question": "形質を決めるもとになるものはどれか。",
+    "choices": [
+      "遺伝子",
+      "気孔",
+      "柔毛",
+      "道管"
+    ],
+    "answer": 0,
+    "explanation": "遺伝子が形質を決める情報をもちます。"
+  },
+  {
+    "id": "q049",
+    "unit": "細胞・遺伝",
+    "question": "対立形質のうち、子に現れやすい形質を何というか。",
+    "choices": [
+      "顕性形質",
+      "潜性形質",
+      "中性形質",
+      "反射形質"
+    ],
+    "answer": 0,
+    "explanation": "現れやすい形質を顕性形質といいます。"
+  },
+  {
+    "id": "q050",
+    "unit": "細胞・遺伝",
+    "question": "対立形質のうち、子に現れにくい形質を何というか。",
+    "choices": [
+      "顕性形質",
+      "潜性形質",
+      "優先形質",
+      "蒸散形質"
+    ],
+    "answer": 1,
+    "explanation": "現れにくい形質を潜性形質といいます。"
+  },
+  {
+    "id": "q051",
+    "unit": "細胞・遺伝",
+    "question": "AAとaaをかけ合わせたとき、子の遺伝子の組み合わせはどうなるか。",
+    "choices": [
+      "すべてAa",
+      "すべてAA",
+      "AAとaaが1:1",
+      "すべてaa"
+    ],
+    "answer": 0,
+    "explanation": "AAの親はA、aaの親はaを出すので、子はすべてAaです。"
+  },
+  {
+    "id": "q052",
+    "unit": "細胞・遺伝",
+    "question": "AaとAaをかけ合わせたとき、遺伝子の組み合わせAA:Aa:aaはどの比になるか。",
+    "choices": [
+      "1:2:1",
+      "3:1:0",
+      "1:1:1",
+      "2:1:2"
+    ],
+    "answer": 0,
+    "explanation": "Aa×AaではAA:Aa:aa=1:2:1になります。"
+  },
+  {
+    "id": "q053",
+    "unit": "細胞・遺伝",
+    "question": "AaとAaで、Aが顕性のとき、現れる形質の比はおよそどれか。",
+    "choices": [
+      "3:1",
+      "1:2:1",
+      "1:1",
+      "すべて顕性"
+    ],
+    "answer": 0,
+    "explanation": "AAとAaが顕性、aaが潜性として現れるので顕性:潜性=3:1です。"
+  },
+  {
+    "id": "q054",
+    "unit": "細胞・遺伝",
+    "question": "メンデルが遺伝の研究で使った植物はどれか。",
+    "choices": [
+      "エンドウ",
+      "アサガオ",
+      "サクラ",
+      "イネ"
+    ],
+    "answer": 0,
+    "explanation": "メンデルはエンドウを使って遺伝の規則性を調べました。"
+  },
+  {
+    "id": "q055",
+    "unit": "細胞・遺伝",
+    "question": "卵と精子が合体することを何というか。",
+    "choices": [
+      "受精",
+      "受粉",
+      "分裂",
+      "蒸散"
+    ],
+    "answer": 0,
+    "explanation": "卵と精子が合体することを受精といいます。"
+  },
+  {
+    "id": "q056",
+    "unit": "細胞・遺伝",
+    "question": "受精卵が細胞分裂をくり返して個体になっていく過程を何というか。",
+    "choices": [
+      "発生",
+      "凝結",
+      "還元",
+      "拡散"
+    ],
+    "answer": 0,
+    "explanation": "受精卵が分裂し、からだがつくられていく過程を発生といいます。"
+  },
+  {
+    "id": "q057",
+    "unit": "細胞・遺伝",
+    "question": "無性生殖の特徴として正しいものはどれか。",
+    "choices": [
+      "親と同じ形質の子ができやすい",
+      "必ず卵と精子が必要",
+      "子は必ず親とまったく違う",
+      "染色体が存在しない"
+    ],
+    "answer": 0,
+    "explanation": "無性生殖では親と同じ遺伝情報をもつ子ができやすいです。"
+  },
+  {
+    "id": "q058",
+    "unit": "細胞・遺伝",
+    "question": "有性生殖の特徴として正しいものはどれか。",
+    "choices": [
+      "卵と精子などの生殖細胞が関係する",
+      "必ず親は1個体だけ",
+      "子は親と完全に同じ",
+      "遺伝子が関係しない"
+    ],
+    "answer": 0,
+    "explanation": "有性生殖では生殖細胞が合体して新しい個体ができます。"
+  },
+  {
+    "id": "q059",
+    "unit": "細胞・遺伝",
+    "question": "染色体が観察しやすいのは、細胞のどの時期か。",
+    "choices": [
+      "分裂しているとき",
+      "何もしていないときだけ",
+      "死んだあと",
+      "光合成中だけ"
+    ],
+    "answer": 0,
+    "explanation": "細胞分裂のとき、染色体がはっきり見えやすくなります。"
+  },
+  {
+    "id": "q060",
+    "unit": "細胞・遺伝",
+    "question": "ヒトの体細胞にある染色体の数として正しいものはどれか。",
+    "choices": [
+      "46本",
+      "23本",
+      "12本",
+      "92本"
+    ],
+    "answer": 0,
+    "explanation": "ヒトの体細胞の染色体は46本です。生殖細胞はその半分の23本です。"
+  },
+  {
+    "id": "q061",
+    "unit": "物質・化学変化",
+    "question": "物質が酸素と結びつく化学変化を何というか。",
+    "choices": [
+      "酸化",
+      "還元",
+      "中和",
+      "蒸留"
+    ],
+    "answer": 0,
+    "explanation": "酸素と結びつく化学変化を酸化といいます。"
+  },
+  {
+    "id": "q062",
+    "unit": "物質・化学変化",
+    "question": "酸化物から酸素が取り除かれる化学変化を何というか。",
+    "choices": [
+      "酸化",
+      "還元",
+      "燃焼",
+      "融解"
+    ],
+    "answer": 1,
+    "explanation": "酸化物から酸素が取り除かれる変化を還元といいます。"
+  },
+  {
+    "id": "q063",
+    "unit": "物質・化学変化",
+    "question": "鉄と硫黄を加熱してできる物質はどれか。",
+    "choices": [
+      "硫化鉄",
+      "酸化鉄",
+      "塩化鉄",
+      "炭酸鉄"
+    ],
+    "answer": 0,
+    "explanation": "鉄と硫黄が化合すると硫化鉄ができます。"
+  },
+  {
+    "id": "q064",
+    "unit": "物質・化学変化",
+    "question": "銅を空気中で加熱してできる黒色の物質はどれか。",
+    "choices": [
+      "酸化銅",
+      "硫化銅",
+      "塩化銅",
+      "炭酸銅"
+    ],
+    "answer": 0,
+    "explanation": "銅を加熱すると酸化銅ができます。"
+  },
+  {
+    "id": "q065",
+    "unit": "物質・化学変化",
+    "question": "マグネシウムを燃焼させるとできる白色の物質はどれか。",
+    "choices": [
+      "酸化マグネシウム",
+      "塩化マグネシウム",
+      "硫化マグネシウム",
+      "炭酸マグネシウム"
+    ],
+    "answer": 0,
+    "explanation": "マグネシウムは燃焼して酸化マグネシウムになります。"
+  },
+  {
+    "id": "q066",
+    "unit": "物質・化学変化",
+    "question": "化学変化の前後で物質全体の質量が変わらない法則はどれか。",
+    "choices": [
+      "質量保存の法則",
+      "慣性の法則",
+      "オームの法則",
+      "作用反作用の法則"
+    ],
+    "answer": 0,
+    "explanation": "化学変化の前後で、反応に関わる物質全体の質量は変わりません。"
+  },
+  {
+    "id": "q067",
+    "unit": "物質・化学変化",
+    "question": "水素を発生させる組み合わせとして適切なものはどれか。",
+    "choices": [
+      "亜鉛とうすい塩酸",
+      "石灰石とうすい塩酸",
+      "二酸化マンガンとオキシドール",
+      "食塩水と砂糖"
+    ],
+    "answer": 0,
+    "explanation": "金属の亜鉛にうすい塩酸を加えると水素が発生します。"
+  },
+  {
+    "id": "q068",
+    "unit": "物質・化学変化",
+    "question": "二酸化炭素を発生させる組み合わせとして適切なものはどれか。",
+    "choices": [
+      "石灰石とうすい塩酸",
+      "亜鉛とうすい塩酸",
+      "鉄と硫黄",
+      "銅と酸素"
+    ],
+    "answer": 0,
+    "explanation": "石灰石にうすい塩酸を加えると二酸化炭素が発生します。"
+  },
+  {
+    "id": "q069",
+    "unit": "物質・化学変化",
+    "question": "酸素を発生させる実験でよく使う物質の組み合わせはどれか。",
+    "choices": [
+      "オキシドールと二酸化マンガン",
+      "石灰石とうすい塩酸",
+      "亜鉛とうすい塩酸",
+      "食塩と水"
+    ],
+    "answer": 0,
+    "explanation": "オキシドールに二酸化マンガンを加えると酸素が発生します。"
+  },
+  {
+    "id": "q070",
+    "unit": "物質・化学変化",
+    "question": "水素の性質として正しいものはどれか。",
+    "choices": [
+      "火を近づけると音を立てて燃える",
+      "石灰水を白くにごらせる",
+      "ものを燃やすはたらきが強い",
+      "赤色リトマス紙を青にする"
+    ],
+    "answer": 0,
+    "explanation": "水素は火を近づけるとポンという音を立てて燃えます。"
+  },
+  {
+    "id": "q071",
+    "unit": "物質・化学変化",
+    "question": "酸素の性質として正しいものはどれか。",
+    "choices": [
+      "ものを燃やすはたらきを助ける",
+      "石灰水を白くにごらせる",
+      "水にまったく溶けない",
+      "刺激臭がある"
+    ],
+    "answer": 0,
+    "explanation": "酸素はものが燃えるのを助ける気体です。"
+  },
+  {
+    "id": "q072",
+    "unit": "物質・化学変化",
+    "question": "二酸化炭素の性質として正しいものはどれか。",
+    "choices": [
+      "石灰水を白くにごらせる",
+      "火を近づけると爆発する",
+      "空気より軽い",
+      "ものを燃やすはたらきが強い"
+    ],
+    "answer": 0,
+    "explanation": "二酸化炭素は石灰水を白くにごらせます。"
+  },
+  {
+    "id": "q073",
+    "unit": "物質・化学変化",
+    "question": "アンモニアの性質として正しいものはどれか。",
+    "choices": [
+      "水に非常によく溶ける",
+      "無臭である",
+      "石灰水を白くにごらせる",
+      "空気より重い"
+    ],
+    "answer": 0,
+    "explanation": "アンモニアは水に非常によく溶ける気体です。"
+  },
+  {
+    "id": "q074",
+    "unit": "物質・化学変化",
+    "question": "塩化ナトリウムの化学式はどれか。",
+    "choices": [
+      "NaCl",
+      "H2O",
+      "CO2",
+      "NH3"
+    ],
+    "answer": 0,
+    "explanation": "塩化ナトリウムはNaClです。"
+  },
+  {
+    "id": "q075",
+    "unit": "物質・化学変化",
+    "question": "水の化学式はどれか。",
+    "choices": [
+      "H2O",
+      "CO2",
+      "O2",
+      "NaCl"
+    ],
+    "answer": 0,
+    "explanation": "水は水素原子2個と酸素原子1個からできるH2Oです。"
+  },
+  {
+    "id": "q076",
+    "unit": "物質・化学変化",
+    "question": "二酸化炭素の化学式はどれか。",
+    "choices": [
+      "CO2",
+      "CO",
+      "O2",
+      "CaCO3"
+    ],
+    "answer": 0,
+    "explanation": "二酸化炭素はCO2です。"
+  },
+  {
+    "id": "q077",
+    "unit": "物質・化学変化",
+    "question": "酸素分子の化学式はどれか。",
+    "choices": [
+      "O2",
+      "O",
+      "CO2",
+      "H2O"
+    ],
+    "answer": 0,
+    "explanation": "酸素分子は酸素原子2個からなるO2です。"
+  },
+  {
+    "id": "q078",
+    "unit": "物質・化学変化",
+    "question": "炭酸水素ナトリウムを加熱したときに発生する気体はどれか。",
+    "choices": [
+      "二酸化炭素",
+      "水素",
+      "酸素",
+      "アンモニア"
+    ],
+    "answer": 0,
+    "explanation": "炭酸水素ナトリウムを加熱すると二酸化炭素などができます。"
+  },
+  {
+    "id": "q079",
+    "unit": "物質・化学変化",
+    "question": "炭酸水素ナトリウムを加熱した後に残る白色の固体は主に何か。",
+    "choices": [
+      "炭酸ナトリウム",
+      "塩化ナトリウム",
+      "酸化銅",
+      "水酸化ナトリウム"
+    ],
+    "answer": 0,
+    "explanation": "炭酸水素ナトリウムは加熱で炭酸ナトリウム、水、二酸化炭素に分解します。"
+  },
+  {
+    "id": "q080",
+    "unit": "物質・化学変化",
+    "question": "水を電気分解したとき、陰極側に発生する気体はどれか。",
+    "choices": [
+      "水素",
+      "酸素",
+      "二酸化炭素",
+      "窒素"
+    ],
+    "answer": 0,
+    "explanation": "水の電気分解では陰極側に水素、陽極側に酸素が発生します。"
+  },
+  {
+    "id": "q081",
+    "unit": "物質・化学変化",
+    "question": "水を電気分解したとき、水素と酸素の体積比はおよそどれか。",
+    "choices": [
+      "2:1",
+      "1:2",
+      "1:1",
+      "3:1"
+    ],
+    "answer": 0,
+    "explanation": "水素と酸素は体積比でおよそ2:1です。"
+  },
+  {
+    "id": "q082",
+    "unit": "物質・化学変化",
+    "question": "酸性の水溶液で赤色リトマス紙はどうなるか。",
+    "choices": [
+      "変化しない",
+      "青色になる",
+      "白色になる",
+      "黒色になる"
+    ],
+    "answer": 0,
+    "explanation": "酸性では青色リトマス紙が赤色に変わり、赤色リトマス紙は変化しません。"
+  },
+  {
+    "id": "q083",
+    "unit": "物質・化学変化",
+    "question": "酸性の水溶液で青色リトマス紙はどうなるか。",
+    "choices": [
+      "赤色になる",
+      "変化しない",
+      "黄色になる",
+      "緑色になる"
+    ],
+    "answer": 0,
+    "explanation": "酸性の水溶液は青色リトマス紙を赤色に変えます。"
+  },
+  {
+    "id": "q084",
+    "unit": "物質・化学変化",
+    "question": "アルカリ性の水溶液で赤色リトマス紙はどうなるか。",
+    "choices": [
+      "青色になる",
+      "変化しない",
+      "黒色になる",
+      "白色になる"
+    ],
+    "answer": 0,
+    "explanation": "アルカリ性の水溶液は赤色リトマス紙を青色に変えます。"
+  },
+  {
+    "id": "q085",
+    "unit": "物質・化学変化",
+    "question": "中性の水溶液として適切なものはどれか。",
+    "choices": [
+      "食塩水",
+      "うすい塩酸",
+      "水酸化ナトリウム水溶液",
+      "アンモニア水"
+    ],
+    "answer": 0,
+    "explanation": "食塩水はほぼ中性です。"
+  },
+  {
+    "id": "q086",
+    "unit": "物質・化学変化",
+    "question": "酸とアルカリが反応して互いの性質を打ち消す反応を何というか。",
+    "choices": [
+      "中和",
+      "酸化",
+      "還元",
+      "蒸留"
+    ],
+    "answer": 0,
+    "explanation": "酸とアルカリが反応することを中和といいます。"
+  },
+  {
+    "id": "q087",
+    "unit": "物質・化学変化",
+    "question": "中和で一般にできる物質の組み合わせはどれか。",
+    "choices": [
+      "塩と水",
+      "酸素と水素",
+      "金属と酸素",
+      "デンプンと糖"
+    ],
+    "answer": 0,
+    "explanation": "中和では塩と水ができます。"
+  },
+  {
+    "id": "q088",
+    "unit": "物質・化学変化",
+    "question": "うすい塩酸に含まれる陽イオンはどれか。",
+    "choices": [
+      "水素イオン",
+      "水酸化物イオン",
+      "ナトリウムイオン",
+      "塩化物イオンだけ"
+    ],
+    "answer": 0,
+    "explanation": "酸性の水溶液には水素イオンが関係します。"
+  },
+  {
+    "id": "q089",
+    "unit": "物質・化学変化",
+    "question": "アルカリ性の水溶液に関係が深い陰イオンはどれか。",
+    "choices": [
+      "水酸化物イオン",
+      "水素イオン",
+      "塩化物イオン",
+      "銅イオン"
+    ],
+    "answer": 0,
+    "explanation": "アルカリ性の水溶液には水酸化物イオンが関係します。"
+  },
+  {
+    "id": "q090",
+    "unit": "物質・化学変化",
+    "question": "食塩水に電流が流れる理由として適切なものはどれか。",
+    "choices": [
+      "イオンがあるから",
+      "分子がすべて止まるから",
+      "電子が水中をまったく動かないから",
+      "水が固体になるから"
+    ],
+    "answer": 0,
+    "explanation": "電解質の水溶液ではイオンが電気を運びます。"
+  },
+  {
+    "id": "q091",
+    "unit": "物質・化学変化",
+    "question": "砂糖水に電流が流れにくい理由として適切なものはどれか。",
+    "choices": [
+      "砂糖が水中でイオンに分かれにくいから",
+      "砂糖が金属だから",
+      "砂糖水が必ず凍るから",
+      "砂糖が酸素を発生するから"
+    ],
+    "answer": 0,
+    "explanation": "砂糖は水に溶けてもイオンに分かれにくいため、電流が流れにくいです。"
+  },
+  {
+    "id": "q092",
+    "unit": "物質・化学変化",
+    "question": "水溶液に電流を流し、物質を分解することを何というか。",
+    "choices": [
+      "電気分解",
+      "蒸留",
+      "再結晶",
+      "ろ過"
+    ],
+    "answer": 0,
+    "explanation": "電流によって物質を分解する操作を電気分解といいます。"
+  },
+  {
+    "id": "q093",
+    "unit": "物質・化学変化",
+    "question": "混合物から液体を沸点の違いで分ける方法はどれか。",
+    "choices": [
+      "蒸留",
+      "ろ過",
+      "再結晶",
+      "沈殿"
+    ],
+    "answer": 0,
+    "explanation": "蒸留は沸点の違いを利用して液体を分ける方法です。"
+  },
+  {
+    "id": "q094",
+    "unit": "物質・化学変化",
+    "question": "水に溶けない固体を液体から分ける方法はどれか。",
+    "choices": [
+      "ろ過",
+      "蒸留",
+      "中和",
+      "電気分解"
+    ],
+    "answer": 0,
+    "explanation": "ろ過は、水に溶けない固体と液体を分ける方法です。"
+  },
+  {
+    "id": "q095",
+    "unit": "物質・化学変化",
+    "question": "温度による溶解度の違いを利用して結晶を取り出す方法はどれか。",
+    "choices": [
+      "再結晶",
+      "ろ過",
+      "蒸留",
+      "酸化"
+    ],
+    "answer": 0,
+    "explanation": "再結晶は溶解度の違いを利用して結晶を取り出します。"
+  },
+  {
+    "id": "q096",
+    "unit": "物質・化学変化",
+    "question": "状態変化で、固体が液体になることを何というか。",
+    "choices": [
+      "融解",
+      "凝固",
+      "蒸発",
+      "凝結"
+    ],
+    "answer": 0,
+    "explanation": "固体が液体になることを融解といいます。"
+  },
+  {
+    "id": "q097",
+    "unit": "物質・化学変化",
+    "question": "状態変化で、液体が気体になることを何というか。",
+    "choices": [
+      "蒸発",
+      "凝固",
+      "凝結",
+      "昇華"
+    ],
+    "answer": 0,
+    "explanation": "液体が気体になることを蒸発といいます。"
+  },
+  {
+    "id": "q098",
+    "unit": "物質・化学変化",
+    "question": "状態変化で、気体が液体になることを何というか。",
+    "choices": [
+      "凝結",
+      "融解",
+      "昇華",
+      "分解"
+    ],
+    "answer": 0,
+    "explanation": "気体が液体になることを凝結といいます。"
+  },
+  {
+    "id": "q099",
+    "unit": "物質・化学変化",
+    "question": "状態変化の前後で変わらないものはどれか。",
+    "choices": [
+      "物質そのもの",
+      "粒子の間隔だけ",
+      "体積だけ",
+      "温度だけ"
+    ],
+    "answer": 0,
+    "explanation": "状態変化では物質そのものは変わらず、粒子の集まり方が変わります。"
+  },
+  {
+    "id": "q100",
+    "unit": "物質・化学変化",
+    "question": "水溶液の濃度を表す式として正しいものはどれか。",
+    "choices": [
+      "溶質の質量÷水溶液の質量×100",
+      "水の質量÷溶質の質量×100",
+      "水溶液の質量÷溶媒の質量×100",
+      "温度÷質量×100"
+    ],
+    "answer": 0,
+    "explanation": "質量パーセント濃度は、溶質の質量÷水溶液の質量×100で求めます。"
+  },
+  {
+    "id": "q101",
+    "unit": "電気・磁界",
+    "question": "電流の単位はどれか。",
+    "choices": [
+      "A",
+      "V",
+      "Ω",
+      "Wb"
+    ],
+    "answer": 0,
+    "explanation": "電流の単位はアンペアAです。"
+  },
+  {
+    "id": "q102",
+    "unit": "電気・磁界",
+    "question": "電圧の単位はどれか。",
+    "choices": [
+      "V",
+      "A",
+      "Ω",
+      "N"
+    ],
+    "answer": 0,
+    "explanation": "電圧の単位はボルトVです。"
+  },
+  {
+    "id": "q103",
+    "unit": "電気・磁界",
+    "question": "抵抗の単位はどれか。",
+    "choices": [
+      "Ω",
+      "A",
+      "V",
+      "J"
+    ],
+    "answer": 0,
+    "explanation": "抵抗の単位はオームΩです。"
+  },
+  {
+    "id": "q104",
+    "unit": "電気・磁界",
+    "question": "電力の単位はどれか。",
+    "choices": [
+      "W",
+      "J",
+      "N",
+      "Pa"
+    ],
+    "answer": 0,
+    "explanation": "電力の単位はワットWです。"
+  },
+  {
+    "id": "q105",
+    "unit": "電気・磁界",
+    "question": "オームの法則として正しい式はどれか。",
+    "choices": [
+      "電圧=抵抗×電流",
+      "電流=抵抗×電圧",
+      "抵抗=電流×電圧",
+      "電圧=抵抗÷電流"
+    ],
+    "answer": 0,
+    "explanation": "オームの法則はV=RIです。"
+  },
+  {
+    "id": "q106",
+    "unit": "電気・磁界",
+    "question": "6Vの電圧で2Aの電流が流れる抵抗は何Ωか。",
+    "choices": [
+      "3Ω",
+      "12Ω",
+      "8Ω",
+      "4Ω"
+    ],
+    "answer": 0,
+    "explanation": "抵抗=電圧÷電流=6÷2=3Ωです。"
+  },
+  {
+    "id": "q107",
+    "unit": "電気・磁界",
+    "question": "4Ωの抵抗に2Aの電流が流れるとき、電圧は何Vか。",
+    "choices": [
+      "8V",
+      "2V",
+      "6V",
+      "4V"
+    ],
+    "answer": 0,
+    "explanation": "電圧=抵抗×電流=4×2=8Vです。"
+  },
+  {
+    "id": "q108",
+    "unit": "電気・磁界",
+    "question": "3Vの電圧を6Ωの抵抗に加えると、電流は何Aか。",
+    "choices": [
+      "0.5A",
+      "2A",
+      "3A",
+      "18A"
+    ],
+    "answer": 0,
+    "explanation": "電流=電圧÷抵抗=3÷6=0.5Aです。"
+  },
+  {
+    "id": "q109",
+    "unit": "電気・磁界",
+    "question": "直列回路で各抵抗に流れる電流はどうなるか。",
+    "choices": [
+      "どこでも同じ",
+      "抵抗ごとに必ず違う",
+      "電源から遠いほど大きい",
+      "0になる"
+    ],
+    "answer": 0,
+    "explanation": "直列回路では電流はどこでも同じです。"
+  },
+  {
+    "id": "q110",
+    "unit": "電気・磁界",
+    "question": "並列回路で各枝に加わる電圧はどうなるか。",
+    "choices": [
+      "同じになる",
+      "必ず違う",
+      "片方だけ0になる",
+      "電流と無関係に2倍になる"
+    ],
+    "answer": 0,
+    "explanation": "並列回路では各枝に同じ電圧が加わります。"
+  },
+  {
+    "id": "q111",
+    "unit": "電気・磁界",
+    "question": "直列につないだ抵抗全体の抵抗はどうなるか。",
+    "choices": [
+      "各抵抗の和になる",
+      "各抵抗の差になる",
+      "必ず小さくなる",
+      "0になる"
+    ],
+    "answer": 0,
+    "explanation": "直列の合成抵抗は各抵抗の和です。"
+  },
+  {
+    "id": "q112",
+    "unit": "電気・磁界",
+    "question": "同じ抵抗を並列につなぐと、全体の抵抗はどうなるか。",
+    "choices": [
+      "1個のときより小さくなる",
+      "1個のときより大きくなる",
+      "必ず同じになる",
+      "無限大になる"
+    ],
+    "answer": 0,
+    "explanation": "並列にすると電流の通り道が増えるため、合成抵抗は小さくなります。"
+  },
+  {
+    "id": "q113",
+    "unit": "電気・磁界",
+    "question": "電流計は回路にどのようにつなぐか。",
+    "choices": [
+      "直列につなぐ",
+      "並列につなぐ",
+      "電池だけにつなぐ",
+      "抵抗と接触させない"
+    ],
+    "answer": 0,
+    "explanation": "電流計は測りたい部分に直列につなぎます。"
+  },
+  {
+    "id": "q114",
+    "unit": "電気・磁界",
+    "question": "電圧計は回路にどのようにつなぐか。",
+    "choices": [
+      "並列につなぐ",
+      "直列につなぐ",
+      "電池から外す",
+      "導線の途中に1本だけつなぐ"
+    ],
+    "answer": 0,
+    "explanation": "電圧計は測りたい部分に並列につなぎます。"
+  },
+  {
+    "id": "q115",
+    "unit": "電気・磁界",
+    "question": "電流による発熱量が大きくなる条件として正しいものはどれか。",
+    "choices": [
+      "電流が大きいほど大きい",
+      "時間が短いほど必ず大きい",
+      "抵抗が0なら最大",
+      "電圧に関係しない"
+    ],
+    "answer": 0,
+    "explanation": "発熱量は電流や抵抗、時間が大きいほど大きくなります。"
+  },
+  {
+    "id": "q116",
+    "unit": "電気・磁界",
+    "question": "電力を求める式として正しいものはどれか。",
+    "choices": [
+      "電力=電圧×電流",
+      "電力=電圧÷電流",
+      "電力=抵抗÷時間",
+      "電力=質量×温度"
+    ],
+    "answer": 0,
+    "explanation": "電力Wは電圧V×電流Aで求めます。"
+  },
+  {
+    "id": "q117",
+    "unit": "電気・磁界",
+    "question": "100Wの電球を2時間使ったときの電力量はどれか。",
+    "choices": [
+      "200Wh",
+      "50Wh",
+      "102Wh",
+      "2Wh"
+    ],
+    "answer": 0,
+    "explanation": "電力量=電力×時間=100W×2h=200Whです。"
+  },
+  {
+    "id": "q118",
+    "unit": "電気・磁界",
+    "question": "磁石のN極とS極を近づけるとどうなるか。",
+    "choices": [
+      "引き合う",
+      "しりぞけ合う",
+      "必ず回転しない",
+      "磁力が消える"
+    ],
+    "answer": 0,
+    "explanation": "異なる極どうしは引き合います。"
+  },
+  {
+    "id": "q119",
+    "unit": "電気・磁界",
+    "question": "磁石のN極とN極を近づけるとどうなるか。",
+    "choices": [
+      "しりぞけ合う",
+      "引き合う",
+      "必ずくっつく",
+      "電流が流れる"
+    ],
+    "answer": 0,
+    "explanation": "同じ極どうしはしりぞけ合います。"
+  },
+  {
+    "id": "q120",
+    "unit": "電気・磁界",
+    "question": "コイルに電流を流すと何ができるか。",
+    "choices": [
+      "磁界",
+      "音だけ",
+      "水素",
+      "デンプン"
+    ],
+    "answer": 0,
+    "explanation": "電流が流れる導線のまわりには磁界ができます。"
+  },
+  {
+    "id": "q121",
+    "unit": "電気・磁界",
+    "question": "電磁石の強さを大きくする方法として適切なものはどれか。",
+    "choices": [
+      "コイルの巻数を増やす",
+      "電流を小さくする",
+      "鉄心を抜く",
+      "導線を切る"
+    ],
+    "answer": 0,
+    "explanation": "巻数や電流を大きくし、鉄心を入れると電磁石は強くなります。"
+  },
+  {
+    "id": "q122",
+    "unit": "電気・磁界",
+    "question": "電流が磁界から力を受けることを利用した装置はどれか。",
+    "choices": [
+      "モーター",
+      "乾電池",
+      "温度計",
+      "顕微鏡"
+    ],
+    "answer": 0,
+    "explanation": "モーターは電流が磁界から受ける力を利用します。"
+  },
+  {
+    "id": "q123",
+    "unit": "電気・磁界",
+    "question": "コイルの中の磁界が変化すると電流が流れる現象を何というか。",
+    "choices": [
+      "電磁誘導",
+      "中和",
+      "蒸散",
+      "凝結"
+    ],
+    "answer": 0,
+    "explanation": "磁界の変化によって電流が流れる現象を電磁誘導といいます。"
+  },
+  {
+    "id": "q124",
+    "unit": "電気・磁界",
+    "question": "発電機が利用している現象はどれか。",
+    "choices": [
+      "電磁誘導",
+      "酸化",
+      "反射",
+      "屈折"
+    ],
+    "answer": 0,
+    "explanation": "発電機は電磁誘導を利用して電流を得ます。"
+  },
+  {
+    "id": "q125",
+    "unit": "電気・磁界",
+    "question": "交流の特徴として正しいものはどれか。",
+    "choices": [
+      "電流の向きが周期的に変わる",
+      "電流の向きが常に一定",
+      "電圧が必ず0",
+      "磁界をつくらない"
+    ],
+    "answer": 0,
+    "explanation": "交流は電流の向きや大きさが周期的に変化します。"
+  },
+  {
+    "id": "q126",
+    "unit": "電気・磁界",
+    "question": "直流の特徴として正しいものはどれか。",
+    "choices": [
+      "電流の向きが一定",
+      "電流の向きが周期的に変わる",
+      "電圧が必ず0",
+      "乾電池では使えない"
+    ],
+    "answer": 0,
+    "explanation": "乾電池などの電流は向きが一定の直流です。"
+  },
+  {
+    "id": "q127",
+    "unit": "電気・磁界",
+    "question": "家庭用コンセントの電流は主にどれか。",
+    "choices": [
+      "交流",
+      "直流",
+      "静電気だけ",
+      "電流は流れない"
+    ],
+    "answer": 0,
+    "explanation": "家庭用コンセントは交流です。"
+  },
+  {
+    "id": "q128",
+    "unit": "電気・磁界",
+    "question": "静電気の説明として適切なものはどれか。",
+    "choices": [
+      "物体に電気がたまったもの",
+      "導線に流れる水",
+      "磁石から出る光",
+      "物質の状態変化"
+    ],
+    "answer": 0,
+    "explanation": "こすれ合うなどして物体に電気がたまることがあります。"
+  },
+  {
+    "id": "q129",
+    "unit": "電気・磁界",
+    "question": "豆電球が明るくなる条件として適切なものはどれか。",
+    "choices": [
+      "流れる電流が大きい",
+      "抵抗が必ず無限大",
+      "電圧が必ず0",
+      "回路が切れている"
+    ],
+    "answer": 0,
+    "explanation": "豆電球は流れる電流が大きいほど明るくなりやすいです。"
+  },
+  {
+    "id": "q130",
+    "unit": "電気・磁界",
+    "question": "電流の向きは、一般にどちらからどちらへ流れると決められているか。",
+    "choices": [
+      "＋極から−極",
+      "−極から＋極",
+      "N極からS極",
+      "低い所から高い所"
+    ],
+    "answer": 0,
+    "explanation": "電流の向きは電池の＋極から−極へ流れる向きと決めます。"
+  },
+  {
+    "id": "q131",
+    "unit": "光・音・力",
+    "question": "光が鏡ではね返る現象を何というか。",
+    "choices": [
+      "反射",
+      "屈折",
+      "蒸散",
+      "還元"
+    ],
+    "answer": 0,
+    "explanation": "光が物体の表面ではね返ることを反射といいます。"
+  },
+  {
+    "id": "q132",
+    "unit": "光・音・力",
+    "question": "光が空気から水へ進むとき、境界面で進む向きが変わる現象を何というか。",
+    "choices": [
+      "屈折",
+      "反射",
+      "燃焼",
+      "中和"
+    ],
+    "answer": 0,
+    "explanation": "光が異なる物質へ進むとき向きが変わる現象を屈折といいます。"
+  },
+  {
+    "id": "q133",
+    "unit": "光・音・力",
+    "question": "鏡での反射で正しい関係はどれか。",
+    "choices": [
+      "入射角=反射角",
+      "入射角は反射角の2倍",
+      "反射角は常に0度",
+      "入射角と反射角は無関係"
+    ],
+    "answer": 0,
+    "explanation": "反射では入射角と反射角が等しくなります。"
+  },
+  {
+    "id": "q134",
+    "unit": "光・音・力",
+    "question": "凸レンズで平行な光が集まる点を何というか。",
+    "choices": [
+      "焦点",
+      "力点",
+      "支点",
+      "中心点"
+    ],
+    "answer": 0,
+    "explanation": "凸レンズで光が集まる点を焦点といいます。"
+  },
+  {
+    "id": "q135",
+    "unit": "光・音・力",
+    "question": "凸レンズで物体を焦点の内側に置いたときに見える像はどれか。",
+    "choices": [
+      "正立の虚像",
+      "倒立の実像",
+      "必ず像はできない",
+      "上下左右とも同じ実像"
+    ],
+    "answer": 0,
+    "explanation": "物体が焦点の内側にあると、正立で大きい虚像が見えます。"
+  },
+  {
+    "id": "q136",
+    "unit": "光・音・力",
+    "question": "白色光をプリズムで分けると何が見えるか。",
+    "choices": [
+      "いろいろな色の光",
+      "音の波",
+      "磁力線",
+      "水蒸気"
+    ],
+    "answer": 0,
+    "explanation": "白色光はいろいろな色の光が混ざっています。"
+  },
+  {
+    "id": "q137",
+    "unit": "光・音・力",
+    "question": "音が伝わるために必要なものはどれか。",
+    "choices": [
+      "空気などの物質",
+      "真空だけ",
+      "光",
+      "磁石"
+    ],
+    "answer": 0,
+    "explanation": "音は空気、水、金属などの物質を通して伝わります。"
+  },
+  {
+    "id": "q138",
+    "unit": "光・音・力",
+    "question": "音の大きさに関係するものはどれか。",
+    "choices": [
+      "振幅",
+      "振動数",
+      "光の速さ",
+      "質量保存"
+    ],
+    "answer": 0,
+    "explanation": "音の大きさは振幅に関係します。"
+  },
+  {
+    "id": "q139",
+    "unit": "光・音・力",
+    "question": "音の高さに関係するものはどれか。",
+    "choices": [
+      "振動数",
+      "振幅",
+      "温度計",
+      "電圧"
+    ],
+    "answer": 0,
+    "explanation": "音の高さは振動数に関係します。"
+  },
+  {
+    "id": "q140",
+    "unit": "光・音・力",
+    "question": "振動数の単位はどれか。",
+    "choices": [
+      "Hz",
+      "N",
+      "Pa",
+      "J"
+    ],
+    "answer": 0,
+    "explanation": "振動数の単位はヘルツHzです。"
+  },
+  {
+    "id": "q141",
+    "unit": "光・音・力",
+    "question": "力の単位はどれか。",
+    "choices": [
+      "N",
+      "kg",
+      "m",
+      "A"
+    ],
+    "answer": 0,
+    "explanation": "力の単位はニュートンNです。"
+  },
+  {
+    "id": "q142",
+    "unit": "光・音・力",
+    "question": "重力の向きとして正しいものはどれか。",
+    "choices": [
+      "地球の中心に向かう",
+      "空に向かう",
+      "東に向かう",
+      "物体の進む向きと同じ"
+    ],
+    "answer": 0,
+    "explanation": "重力は地球の中心に向かってはたらきます。"
+  },
+  {
+    "id": "q143",
+    "unit": "光・音・力",
+    "question": "質量100gの物体にはたらく重力は、およそ何Nか。",
+    "choices": [
+      "1N",
+      "10N",
+      "0.1N",
+      "100N"
+    ],
+    "answer": 0,
+    "explanation": "中学理科では100gの物体にはたらく重力を約1Nとして扱います。"
+  },
+  {
+    "id": "q144",
+    "unit": "光・音・力",
+    "question": "ばねののびと力の関係を表す法則はどれか。",
+    "choices": [
+      "フックの法則",
+      "オームの法則",
+      "質量保存の法則",
+      "慣性の法則"
+    ],
+    "answer": 0,
+    "explanation": "ばねののびは加えた力に比例します。"
+  },
+  {
+    "id": "q145",
+    "unit": "光・音・力",
+    "question": "圧力を求める式として正しいものはどれか。",
+    "choices": [
+      "圧力=力÷面積",
+      "圧力=面積÷力",
+      "圧力=質量×温度",
+      "圧力=電圧×電流"
+    ],
+    "answer": 0,
+    "explanation": "圧力は単位面積あたりにはたらく力です。"
+  },
+  {
+    "id": "q146",
+    "unit": "光・音・力",
+    "question": "圧力の単位はどれか。",
+    "choices": [
+      "Pa",
+      "N",
+      "A",
+      "Ω"
+    ],
+    "answer": 0,
+    "explanation": "圧力の単位はパスカルPaです。"
+  },
+  {
+    "id": "q147",
+    "unit": "光・音・力",
+    "question": "同じ力で押すとき、面積が小さいほど圧力はどうなるか。",
+    "choices": [
+      "大きくなる",
+      "小さくなる",
+      "変わらない",
+      "0になる"
+    ],
+    "answer": 0,
+    "explanation": "圧力は力÷面積なので、面積が小さいほど大きくなります。"
+  },
+  {
+    "id": "q148",
+    "unit": "光・音・力",
+    "question": "水中の物体にはたらく上向きの力を何というか。",
+    "choices": [
+      "浮力",
+      "摩擦力",
+      "重力",
+      "弾性力"
+    ],
+    "answer": 0,
+    "explanation": "水中では物体に上向きの浮力がはたらきます。"
+  },
+  {
+    "id": "q149",
+    "unit": "光・音・力",
+    "question": "物体の運動の向きと反対向きにはたらく、すべりを妨げる力はどれか。",
+    "choices": [
+      "摩擦力",
+      "浮力",
+      "電気力",
+      "磁力だけ"
+    ],
+    "answer": 0,
+    "explanation": "摩擦力は物体の動きを妨げる向きにはたらきます。"
+  },
+  {
+    "id": "q150",
+    "unit": "光・音・力",
+    "question": "力の三要素に含まれないものはどれか。",
+    "choices": [
+      "色",
+      "大きさ",
+      "向き",
+      "作用点"
+    ],
+    "answer": 0,
+    "explanation": "力は大きさ、向き、作用点で表します。"
+  },
+  {
+    "id": "q151",
+    "unit": "光・音・力",
+    "question": "仕事を求める式として正しいものはどれか。",
+    "choices": [
+      "仕事=力×距離",
+      "仕事=距離÷力",
+      "仕事=電圧×電流",
+      "仕事=質量÷体積"
+    ],
+    "answer": 0,
+    "explanation": "仕事は力の大きさ×力の向きに動いた距離で求めます。"
+  },
+  {
+    "id": "q152",
+    "unit": "光・音・力",
+    "question": "仕事の単位はどれか。",
+    "choices": [
+      "J",
+      "N",
+      "Pa",
+      "Hz"
+    ],
+    "answer": 0,
+    "explanation": "仕事やエネルギーの単位はジュールJです。"
+  },
+  {
+    "id": "q153",
+    "unit": "光・音・力",
+    "question": "仕事率の単位はどれか。",
+    "choices": [
+      "W",
+      "J",
+      "N",
+      "kg"
+    ],
+    "answer": 0,
+    "explanation": "仕事率の単位はワットWです。"
+  },
+  {
+    "id": "q154",
+    "unit": "光・音・力",
+    "question": "斜面を使うと、直接持ち上げるときと比べて必要な力はどうなるか。",
+    "choices": [
+      "小さくできる",
+      "必ず大きくなる",
+      "必ず0になる",
+      "重力がなくなる"
+    ],
+    "answer": 0,
+    "explanation": "斜面を使うと必要な力を小さくできますが、動かす距離は長くなります。"
+  },
+  {
+    "id": "q155",
+    "unit": "光・音・力",
+    "question": "速さを求める式として正しいものはどれか。",
+    "choices": [
+      "速さ=距離÷時間",
+      "速さ=時間÷距離",
+      "速さ=力×距離",
+      "速さ=質量÷体積"
+    ],
+    "answer": 0,
+    "explanation": "速さは移動距離をかかった時間で割って求めます。"
+  },
+  {
+    "id": "q156",
+    "unit": "光・音・力",
+    "question": "一定の速さで一直線上を進む運動を何というか。",
+    "choices": [
+      "等速直線運動",
+      "円運動",
+      "自由落下だけ",
+      "振動"
+    ],
+    "answer": 0,
+    "explanation": "向きと速さが一定の運動を等速直線運動といいます。"
+  },
+  {
+    "id": "q157",
+    "unit": "光・音・力",
+    "question": "物体がその運動の状態を保とうとする性質を何というか。",
+    "choices": [
+      "慣性",
+      "浮力",
+      "蒸散",
+      "電磁誘導"
+    ],
+    "answer": 0,
+    "explanation": "物体には静止や運動の状態を保とうとする慣性があります。"
+  },
+  {
+    "id": "q158",
+    "unit": "光・音・力",
+    "question": "物体が地球に引かれて落ちる運動を何というか。",
+    "choices": [
+      "自由落下",
+      "屈折",
+      "反射",
+      "中和"
+    ],
+    "answer": 0,
+    "explanation": "空気抵抗を考えないで重力だけで落ちる運動を自由落下といいます。"
+  },
+  {
+    "id": "q159",
+    "unit": "光・音・力",
+    "question": "力がつり合っている物体の運動として正しいものはどれか。",
+    "choices": [
+      "静止または等速直線運動を続ける",
+      "必ず速くなる",
+      "必ず円運動する",
+      "必ず上に動く"
+    ],
+    "answer": 0,
+    "explanation": "力がつり合うと、物体の運動の状態は変化しません。"
+  },
+  {
+    "id": "q160",
+    "unit": "光・音・力",
+    "question": "作用・反作用の関係として正しいものはどれか。",
+    "choices": [
+      "大きさが等しく向きが反対",
+      "大きさが必ず違う",
+      "同じ物体にはたらく",
+      "向きが同じ"
+    ],
+    "answer": 0,
+    "explanation": "作用・反作用の力は別々の物体に、大きさが等しく反対向きにはたらきます。"
+  },
+  {
+    "id": "q161",
+    "unit": "地球・宇宙",
+    "question": "地球の表面をおおう厚い岩石の板を何というか。",
+    "choices": [
+      "プレート",
+      "マグマ",
+      "地層",
+      "鉱物"
+    ],
+    "answer": 0,
+    "explanation": "地球表面は複数のプレートでおおわれています。"
+  },
+  {
+    "id": "q162",
+    "unit": "地球・宇宙",
+    "question": "地震が発生した地下の地点を何というか。",
+    "choices": [
+      "震源",
+      "震央",
+      "断層",
+      "火口"
+    ],
+    "answer": 0,
+    "explanation": "地下で地震が発生した場所を震源といいます。"
+  },
+  {
+    "id": "q163",
+    "unit": "地球・宇宙",
+    "question": "震源の真上の地表の地点を何というか。",
+    "choices": [
+      "震央",
+      "震源",
+      "火山灰",
+      "節理"
+    ],
+    "answer": 0,
+    "explanation": "震源の真上の地表の点を震央といいます。"
+  },
+  {
+    "id": "q164",
+    "unit": "地球・宇宙",
+    "question": "地震の規模を表す値はどれか。",
+    "choices": [
+      "マグニチュード",
+      "震度",
+      "気圧",
+      "湿度"
+    ],
+    "answer": 0,
+    "explanation": "マグニチュードは地震そのものの規模を表します。"
+  },
+  {
+    "id": "q165",
+    "unit": "地球・宇宙",
+    "question": "ある場所でのゆれの大きさを表す値はどれか。",
+    "choices": [
+      "震度",
+      "マグニチュード",
+      "等級",
+      "気圧"
+    ],
+    "answer": 0,
+    "explanation": "震度はその場所でのゆれの強さを表します。"
+  },
+  {
+    "id": "q166",
+    "unit": "地球・宇宙",
+    "question": "P波とS波のうち、速く伝わるのはどちらか。",
+    "choices": [
+      "P波",
+      "S波",
+      "同じ速さ",
+      "場所に関係なくS波"
+    ],
+    "answer": 0,
+    "explanation": "P波はS波より速く伝わります。"
+  },
+  {
+    "id": "q167",
+    "unit": "地球・宇宙",
+    "question": "火山灰などが積もってできた岩石はどれか。",
+    "choices": [
+      "凝灰岩",
+      "花こう岩",
+      "玄武岩",
+      "安山岩"
+    ],
+    "answer": 0,
+    "explanation": "火山灰が固まると凝灰岩になります。"
+  },
+  {
+    "id": "q168",
+    "unit": "地球・宇宙",
+    "question": "マグマが地下深くでゆっくり冷えてできた岩石はどれか。",
+    "choices": [
+      "深成岩",
+      "火山岩",
+      "堆積岩",
+      "変成岩"
+    ],
+    "answer": 0,
+    "explanation": "地下深くでゆっくり冷えた岩石を深成岩といいます。"
+  },
+  {
+    "id": "q169",
+    "unit": "地球・宇宙",
+    "question": "マグマが地表近くで急に冷えてできた岩石はどれか。",
+    "choices": [
+      "火山岩",
+      "深成岩",
+      "石灰岩",
+      "チャート"
+    ],
+    "answer": 0,
+    "explanation": "地表近くで急に冷えた岩石を火山岩といいます。"
+  },
+  {
+    "id": "q170",
+    "unit": "地球・宇宙",
+    "question": "花こう岩の組織として適切なものはどれか。",
+    "choices": [
+      "等粒状組織",
+      "斑状組織",
+      "層理",
+      "断層"
+    ],
+    "answer": 0,
+    "explanation": "深成岩の花こう岩は等粒状組織をもちます。"
+  },
+  {
+    "id": "q171",
+    "unit": "地球・宇宙",
+    "question": "安山岩の組織として適切なものはどれか。",
+    "choices": [
+      "斑状組織",
+      "等粒状組織",
+      "柱状節理だけ",
+      "片理"
+    ],
+    "answer": 0,
+    "explanation": "火山岩の安山岩は斑状組織をもちます。"
+  },
+  {
+    "id": "q172",
+    "unit": "地球・宇宙",
+    "question": "れき、砂、泥が水中で沈む順序として正しいものはどれか。",
+    "choices": [
+      "れき→砂→泥",
+      "泥→砂→れき",
+      "砂→泥→れき",
+      "同時にすべて沈む"
+    ],
+    "answer": 0,
+    "explanation": "粒が大きいものほど早く沈みます。"
+  },
+  {
+    "id": "q173",
+    "unit": "地球・宇宙",
+    "question": "地層が堆積した当時の環境を知る手がかりになる化石はどれか。",
+    "choices": [
+      "示相化石",
+      "示準化石",
+      "変成化石",
+      "火成化石"
+    ],
+    "answer": 0,
+    "explanation": "示相化石は当時の環境を知る手がかりになります。"
+  },
+  {
+    "id": "q174",
+    "unit": "地球・宇宙",
+    "question": "地層の年代を知る手がかりになる化石はどれか。",
+    "choices": [
+      "示準化石",
+      "示相化石",
+      "環境化石",
+      "火山化石"
+    ],
+    "answer": 0,
+    "explanation": "示準化石は地層の年代を知る手がかりになります。"
+  },
+  {
+    "id": "q175",
+    "unit": "地球・宇宙",
+    "question": "アンモナイトは主にどの化石として使われるか。",
+    "choices": [
+      "示準化石",
+      "示相化石",
+      "現在の環境だけを示す化石",
+      "火山灰"
+    ],
+    "answer": 0,
+    "explanation": "アンモナイトは中生代を示す示準化石として有名です。"
+  },
+  {
+    "id": "q176",
+    "unit": "地球・宇宙",
+    "question": "太陽のように自ら光を出す天体はどれか。",
+    "choices": [
+      "恒星",
+      "惑星",
+      "衛星",
+      "小惑星だけ"
+    ],
+    "answer": 0,
+    "explanation": "自ら光を出す天体を恒星といいます。"
+  },
+  {
+    "id": "q177",
+    "unit": "地球・宇宙",
+    "question": "地球のように恒星のまわりを回る天体はどれか。",
+    "choices": [
+      "惑星",
+      "恒星",
+      "銀河",
+      "星雲だけ"
+    ],
+    "answer": 0,
+    "explanation": "惑星は恒星のまわりを公転します。"
+  },
+  {
+    "id": "q178",
+    "unit": "地球・宇宙",
+    "question": "月のように惑星のまわりを回る天体はどれか。",
+    "choices": [
+      "衛星",
+      "恒星",
+      "銀河",
+      "流星"
+    ],
+    "answer": 0,
+    "explanation": "衛星は惑星のまわりを公転します。"
+  },
+  {
+    "id": "q179",
+    "unit": "地球・宇宙",
+    "question": "地球が地軸を中心に1日で1回転する運動を何というか。",
+    "choices": [
+      "自転",
+      "公転",
+      "歳差",
+      "蒸散"
+    ],
+    "answer": 0,
+    "explanation": "地球の1日の運動を自転といいます。"
+  },
+  {
+    "id": "q180",
+    "unit": "地球・宇宙",
+    "question": "地球が太陽のまわりを1年で1回まわる運動を何というか。",
+    "choices": [
+      "公転",
+      "自転",
+      "日周運動",
+      "月食"
+    ],
+    "answer": 0,
+    "explanation": "地球が太陽のまわりを回る運動を公転といいます。"
+  },
+  {
+    "id": "q181",
+    "unit": "地球・宇宙",
+    "question": "季節が変わる主な理由はどれか。",
+    "choices": [
+      "地軸が傾いたまま公転するから",
+      "太陽が地球のまわりを回るから",
+      "月が光るから",
+      "地球の形が毎日変わるから"
+    ],
+    "answer": 0,
+    "explanation": "地軸が傾いたまま公転するため、太陽高度や昼の長さが変わります。"
+  },
+  {
+    "id": "q182",
+    "unit": "地球・宇宙",
+    "question": "太陽が最も高くなるころを何というか。",
+    "choices": [
+      "南中",
+      "満潮",
+      "新月",
+      "自転"
+    ],
+    "answer": 0,
+    "explanation": "太陽が真南付近で最も高くなることを南中といいます。"
+  },
+  {
+    "id": "q183",
+    "unit": "地球・宇宙",
+    "question": "月が太陽の光を反射して光って見えることについて正しいものはどれか。",
+    "choices": [
+      "月は自ら光っていない",
+      "月は恒星である",
+      "月は太陽より大きい",
+      "月は常に満月である"
+    ],
+    "answer": 0,
+    "explanation": "月は太陽の光を反射して光って見えます。"
+  },
+  {
+    "id": "q184",
+    "unit": "地球・宇宙",
+    "question": "太陽、月、地球の順に一直線に近く並ぶと起こりやすい現象はどれか。",
+    "choices": [
+      "日食",
+      "月食",
+      "地震",
+      "台風"
+    ],
+    "answer": 0,
+    "explanation": "太陽、月、地球の順に並ぶと月が太陽を隠し、日食が起こります。"
+  },
+  {
+    "id": "q185",
+    "unit": "地球・宇宙",
+    "question": "太陽、地球、月の順に一直線に近く並ぶと起こりやすい現象はどれか。",
+    "choices": [
+      "月食",
+      "日食",
+      "台風",
+      "津波"
+    ],
+    "answer": 0,
+    "explanation": "地球の影に月が入ると月食が起こります。"
+  },
+  {
+    "id": "q186",
+    "unit": "天気",
+    "question": "空気中の水蒸気が冷やされて水滴になる現象を何というか。",
+    "choices": [
+      "凝結",
+      "蒸発",
+      "融解",
+      "昇華"
+    ],
+    "answer": 0,
+    "explanation": "水蒸気が冷やされて水滴になることを凝結といいます。"
+  },
+  {
+    "id": "q187",
+    "unit": "天気",
+    "question": "空気がこれ以上水蒸気を含めない状態を何というか。",
+    "choices": [
+      "飽和",
+      "乾燥",
+      "中和",
+      "還元"
+    ],
+    "answer": 0,
+    "explanation": "水蒸気を最大限含んだ状態を飽和といいます。"
+  },
+  {
+    "id": "q188",
+    "unit": "天気",
+    "question": "露点とは何か。",
+    "choices": [
+      "空気中の水蒸気が凝結し始める温度",
+      "水が沸騰する温度",
+      "氷が必ずできる温度",
+      "風が止まる温度"
+    ],
+    "answer": 0,
+    "explanation": "空気を冷やしたとき、水蒸気が凝結し始める温度を露点といいます。"
+  },
+  {
+    "id": "q189",
+    "unit": "天気",
+    "question": "湿度を求める式として適切なものはどれか。",
+    "choices": [
+      "現在の水蒸気量÷飽和水蒸気量×100",
+      "飽和水蒸気量÷現在の水蒸気量×100",
+      "気温÷気圧×100",
+      "風速÷気温×100"
+    ],
+    "answer": 0,
+    "explanation": "湿度は現在の水蒸気量を飽和水蒸気量で割って100をかけます。"
+  },
+  {
+    "id": "q190",
+    "unit": "天気",
+    "question": "雲ができやすい条件として正しいものはどれか。",
+    "choices": [
+      "空気が上昇して冷える",
+      "空気が下降して温まる",
+      "水蒸気が完全になくなる",
+      "気圧が無限大になる"
+    ],
+    "answer": 0,
+    "explanation": "空気が上昇して冷えると、水蒸気が凝結して雲ができます。"
+  },
+  {
+    "id": "q191",
+    "unit": "天気",
+    "question": "低気圧付近の空気の流れとして正しいものはどれか。",
+    "choices": [
+      "周囲から中心へ吹き込み上昇する",
+      "中心から外へ吹き出し下降する",
+      "必ず風がない",
+      "上空から地面だけに流れる"
+    ],
+    "answer": 0,
+    "explanation": "低気圧では周囲から空気が吹き込み、上昇気流が起こりやすいです。"
+  },
+  {
+    "id": "q192",
+    "unit": "天気",
+    "question": "高気圧付近の天気として多いものはどれか。",
+    "choices": [
+      "晴れ",
+      "大雨",
+      "台風",
+      "雷だけ"
+    ],
+    "answer": 0,
+    "explanation": "高気圧では下降気流が起こりやすく、雲ができにくいため晴れやすいです。"
+  },
+  {
+    "id": "q193",
+    "unit": "天気",
+    "question": "温暖前線が通過すると、気温は一般にどうなるか。",
+    "choices": [
+      "上がる",
+      "下がる",
+      "必ず0℃になる",
+      "変化しない"
+    ],
+    "answer": 0,
+    "explanation": "温暖前線の通過後は暖かい空気におおわれ、気温が上がりやすいです。"
+  },
+  {
+    "id": "q194",
+    "unit": "天気",
+    "question": "寒冷前線が通過すると、気温は一般にどうなるか。",
+    "choices": [
+      "下がる",
+      "上がる",
+      "必ず40℃になる",
+      "変化しない"
+    ],
+    "answer": 0,
+    "explanation": "寒冷前線の通過後は冷たい空気におおわれ、気温が下がりやすいです。"
+  },
+  {
+    "id": "q195",
+    "unit": "天気",
+    "question": "寒冷前線付近で起こりやすい雨の特徴はどれか。",
+    "choices": [
+      "短時間に強く降る",
+      "長時間しとしと降るだけ",
+      "雨は絶対に降らない",
+      "必ず雪になる"
+    ],
+    "answer": 0,
+    "explanation": "寒冷前線では積乱雲が発達し、短時間に強い雨が降りやすいです。"
+  },
+  {
+    "id": "q196",
+    "unit": "天気",
+    "question": "温暖前線付近で起こりやすい雨の特徴はどれか。",
+    "choices": [
+      "広い範囲で長く降る",
+      "短時間だけ激しく降る",
+      "雨は絶対に降らない",
+      "必ずひょうだけになる"
+    ],
+    "answer": 0,
+    "explanation": "温暖前線では乱層雲などにより広い範囲で長く雨が降りやすいです。"
+  },
+  {
+    "id": "q197",
+    "unit": "天気",
+    "question": "日本付近で天気が西から東へ変わりやすい主な理由はどれか。",
+    "choices": [
+      "偏西風の影響",
+      "貿易風だけの影響",
+      "地球の自転が止まるから",
+      "月の公転だけの影響"
+    ],
+    "answer": 0,
+    "explanation": "中緯度では偏西風の影響で、天気が西から東へ移りやすいです。"
+  },
+  {
+    "id": "q198",
+    "unit": "天気",
+    "question": "夏に日本付近をおおいやすい気団はどれか。",
+    "choices": [
+      "小笠原気団",
+      "シベリア気団",
+      "オホーツク海気団だけ",
+      "揚子江気団だけ"
+    ],
+    "answer": 0,
+    "explanation": "夏は暖かく湿った小笠原気団の影響を受けやすいです。"
+  },
+  {
+    "id": "q199",
+    "unit": "天気",
+    "question": "冬に日本付近をおおいやすい気団はどれか。",
+    "choices": [
+      "シベリア気団",
+      "小笠原気団",
+      "赤道気団",
+      "オホーツク海気団だけ"
+    ],
+    "answer": 0,
+    "explanation": "冬は冷たく乾燥したシベリア気団の影響を受けやすいです。"
+  },
+  {
+    "id": "q200",
+    "unit": "天気",
+    "question": "台風の中心付近で風が弱く、雲が少ない部分を何というか。",
+    "choices": [
+      "台風の目",
+      "前線面",
+      "震央",
+      "露点"
+    ],
+    "answer": 0,
+    "explanation": "台風の中心付近にある風が弱く雲が少ない部分を台風の目といいます。"
+  }
+];
+    const STORAGE_KEY = "rika_quiz_questions_v2";
+    const TIME_LIMIT = 32;
+
+    let questions = loadQuestions();
+    let quizQuestions = [];
+    let currentIndex = 0, score = 0, timeLeft = TIME_LIMIT, timerId = null;
+    let answered = false, fiftyRemain = 2, stopRemain = 4, timeStopped = false;
+    let randomMode = false;
+    let editingId = null;
+
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      unitName: $("unitName"), timeLeft: $("timeLeft"), score: $("score"), questionNumber: $("questionNumber"), questionText: $("questionText"), answers: $("answers"),
+      resultBox: $("resultBox"), resultTitle: $("resultTitle"), explanation: $("explanation"), nextBtn: $("nextBtn"), resetBtn: $("resetBtn"),
+      fiftyBtn: $("fiftyBtn"), stopBtn: $("stopBtn"), fiftyCount: $("fiftyCount"), stopCount: $("stopCount"), quizPanel: $("quizPanel"),
+      finishCard: $("finishCard"), finalScore: $("finalScore"), finishMessage: $("finishMessage"), questionArea: $("questionArea"), unitFilter: $("unitFilter"),
+      countChip: $("countChip"), quizView: $("quizView"), adminView: $("adminView"), quizModeBtn: $("quizModeBtn"), adminModeBtn: $("adminModeBtn"),
+      questionList: $("questionList"), adminSearch: $("adminSearch"), adminCount: $("adminCount"), toast: $("toast")
+    };
+
+    function loadQuestions() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return structuredClone(DEFAULT_QUESTIONS);
+        const parsed = JSON.parse(saved);
+        return validateQuestions(parsed) ? parsed : structuredClone(DEFAULT_QUESTIONS);
+      } catch {
+        return structuredClone(DEFAULT_QUESTIONS);
+      }
+    }
+
+    function saveQuestions() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(questions));
+      refreshUnitFilter();
+      renderQuestionList();
+      updateCount();
+    }
+
+    function validateQuestions(data) {
+      return Array.isArray(data) && data.every(q =>
+        q && typeof q.unit === "string" && typeof q.question === "string" &&
+        Array.isArray(q.choices) && q.choices.length === 4 &&
+        q.choices.every(c => typeof c === "string") &&
+        Number.isInteger(q.answer) && q.answer >= 0 && q.answer <= 3 &&
+        typeof q.explanation === "string"
+      );
+    }
+
+    function showToast(text) {
+      els.toast.textContent = text;
+      els.toast.classList.add("show");
+      setTimeout(() => els.toast.classList.remove("show"), 1700);
+    }
+
+    function uniqueUnits() {
+      return [...new Set(questions.map(q => q.unit).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ja"));
+    }
+
+    function refreshUnitFilter() {
+      const current = els.unitFilter.value || "__all__";
+      els.unitFilter.innerHTML = `<option value="__all__">全範囲から出題</option>` + uniqueUnits().map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join("");
+      if ([...els.unitFilter.options].some(o => o.value === current)) els.unitFilter.value = current;
+    }
+
+    function updateCount() {
+      els.countChip.textContent = `${questions.length}問登録中`;
+    }
+
+    function getFilteredQuestions() {
+      const unit = els.unitFilter.value;
+      const base = unit === "__all__" ? questions : questions.filter(q => q.unit === unit);
+      return randomMode ? shuffle([...base]) : [...base];
+    }
+
+    function startQuiz() {
+      clearInterval(timerId);
+      quizQuestions = getFilteredQuestions();
+      currentIndex = 0; score = 0; fiftyRemain = 2; stopRemain = 4;
+      els.score.textContent = score;
+      els.quizPanel.style.display = "block";
+      els.questionArea.style.display = "grid";
+      els.finishCard.classList.remove("show");
+      if (quizQuestions.length === 0) {
+        els.questionText.textContent = "出題できる問題がありません。問題を追加してください。";
+        els.quizPanel.style.display = "none";
+        return;
+      }
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      clearInterval(timerId);
+      const q = quizQuestions[currentIndex];
+      answered = false; timeStopped = false; timeLeft = TIME_LIMIT;
+      els.unitName.textContent = q.unit;
+      els.timeLeft.textContent = timeLeft;
+      els.score.textContent = score;
+      els.questionNumber.textContent = currentIndex + 1;
+      els.questionText.textContent = q.question;
+      els.resultBox.classList.remove("show");
+      els.resultTitle.textContent = ""; els.explanation.textContent = "";
+      els.answers.innerHTML = "";
+      q.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.className = "answer-btn";
+        button.dataset.index = index;
+        button.innerHTML = `<span class="choice-number">${index + 1}</span><span>${escapeHtml(choice)}</span><span class="choice-arrow">›</span>`;
+        button.addEventListener("click", () => selectAnswer(index));
+        els.answers.appendChild(button);
+      });
+      updateLifelineButtons();
+      startTimer();
+    }
+
+    function startTimer() {
+      timerId = setInterval(() => {
+        if (answered || timeStopped) return;
+        timeLeft--;
+        els.timeLeft.textContent = timeLeft;
+        if (timeLeft <= 0) { clearInterval(timerId); timeUp(); }
+      }, 1000);
+    }
+
+    function selectAnswer(selectedIndex) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerId);
+      const q = quizQuestions[currentIndex];
+      const buttons = [...document.querySelectorAll(".answer-btn")];
+      buttons.forEach(button => {
+        const index = Number(button.dataset.index);
+        button.disabled = true;
+        if (index === q.answer) button.classList.add("correct");
+        if (index === selectedIndex && selectedIndex !== q.answer) button.classList.add("wrong");
+      });
+      if (selectedIndex === q.answer) {
+        const point = Math.max(5, 10 + Math.floor(timeLeft / 4));
+        score += point;
+        els.score.textContent = score;
+        showResult(true, `正解！ +${point}点`, q.explanation);
+      } else {
+        showResult(false, "不正解", q.explanation);
+      }
+    }
+
+    function timeUp() {
+      if (answered) return;
+      answered = true;
+      const q = quizQuestions[currentIndex];
+      [...document.querySelectorAll(".answer-btn")].forEach(button => {
+        const index = Number(button.dataset.index);
+        button.disabled = true;
+        button.classList.add(index === q.answer ? "correct" : "wrong");
+      });
+      showResult(false, "時間切れ", q.explanation);
+    }
+
+    function showResult(isCorrect, title, explanation) {
+      els.resultBox.classList.add("show");
+      els.resultTitle.textContent = title;
+      els.resultTitle.className = "result-title " + (isCorrect ? "correct-text" : "wrong-text");
+      els.explanation.textContent = explanation;
+      updateLifelineButtons();
+    }
+
+    function useFifty() {
+      if (answered || fiftyRemain <= 0) return;
+      const q = quizQuestions[currentIndex];
+      const wrongIndexes = shuffle(q.choices.map((_, i) => i).filter(i => i !== q.answer));
+      const buttons = [...document.querySelectorAll(".answer-btn")];
+      wrongIndexes.slice(0, 2).forEach(index => buttons[index].classList.add("hidden-choice"));
+      fiftyRemain--;
+      updateLifelineButtons();
+    }
+
+    function useStop() {
+      if (answered || stopRemain <= 0 || timeStopped) return;
+      timeStopped = true;
+      stopRemain--;
+      updateLifelineButtons();
+      els.stopBtn.querySelector(".lifeline-main").textContent = "時間停止中！";
+      setTimeout(() => {
+        if (!answered) {
+          timeStopped = false;
+          els.stopBtn.querySelector(".lifeline-main").textContent = "ストップしてあげる！";
+        }
+      }, 5000);
+    }
+
+    function updateLifelineButtons() {
+      els.fiftyCount.textContent = `残り${fiftyRemain}回使えるよ`;
+      els.stopCount.textContent = `残り${stopRemain}回使えるよ！`;
+      els.fiftyBtn.disabled = fiftyRemain <= 0 || answered;
+      els.stopBtn.disabled = stopRemain <= 0 || answered;
+      if (!timeStopped) els.stopBtn.querySelector(".lifeline-main").textContent = "ストップしてあげる！";
+    }
+
+    function nextQuestion() {
+      if (currentIndex < quizQuestions.length - 1) { currentIndex++; renderQuestion(); }
+      else showFinish();
+    }
+
+    function showFinish() {
+      clearInterval(timerId);
+      els.quizPanel.style.display = "none";
+      els.questionArea.style.display = "none";
+      els.finishCard.classList.add("show");
+      els.finalScore.textContent = `${score}点`;
+      const rate = score / Math.max(1, quizQuestions.length * 18);
+      els.finishMessage.textContent = rate >= .8 ? "かなりよく理解できています。入試レベルの問題にも進めます。" : rate >= .5 ? "基本は押さえられています。間違えた問題の解説を確認しましょう。" : "まずは重要語句と基本のしくみを確認しましょう。もう一度挑戦すると定着します。";
+    }
+
+    function showQuizMode() {
+      els.quizView.style.display = "block";
+      els.adminView.classList.remove("show");
+      els.quizModeBtn.classList.add("active");
+      els.adminModeBtn.classList.remove("active");
+      startQuiz();
+    }
+
+    function showAdminMode() {
+      clearInterval(timerId);
+      els.quizView.style.display = "none";
+      els.adminView.classList.add("show");
+      els.quizModeBtn.classList.remove("active");
+      els.adminModeBtn.classList.add("active");
+      renderQuestionList();
+      clearForm();
+    }
+
+    function renderQuestionList() {
+      const keyword = els.adminSearch.value.trim().toLowerCase();
+      const filtered = questions.filter(q => !keyword || `${q.unit} ${q.question} ${q.choices.join(" ")}`.toLowerCase().includes(keyword));
+      els.adminCount.textContent = `${filtered.length}問表示 / ${questions.length}問`;
+      els.questionList.innerHTML = filtered.map(q => `
+        <button class="q-item ${q.id === editingId ? "active" : ""}" data-id="${escapeHtml(q.id)}">
+          ${escapeHtml(q.question)}
+          <small>${escapeHtml(q.unit)} / 正解：${escapeHtml(q.choices[q.answer] || "")}</small>
+        </button>`).join("");
+      els.questionList.querySelectorAll(".q-item").forEach(btn => btn.addEventListener("click", () => editExistingQuestion(btn.dataset.id)));
+    }
+
+    function editExistingQuestion(id) {
+      const q = questions.find(item => item.id === id);
+      if (!q) return;
+      editingId = id;
+      $("editUnit").value = q.unit;
+      $("editQuestion").value = q.question;
+      q.choices.forEach((choice, i) => $("choice" + i).value = choice);
+      $("editAnswer").value = String(q.answer);
+      $("editExplanation").value = q.explanation;
+      renderQuestionList();
+    }
+
+    function clearForm() {
+      editingId = null;
+      $("editUnit").value = "";
+      $("editQuestion").value = "";
+      [0,1,2,3].forEach(i => $("choice" + i).value = "");
+      $("editAnswer").value = "0";
+      $("editExplanation").value = "";
+      renderQuestionList();
+    }
+
+    function readFormQuestion() {
+      const unit = $("editUnit").value.trim();
+      const question = $("editQuestion").value.trim();
+      const choices = [0,1,2,3].map(i => $("choice" + i).value.trim());
+      const answer = Number($("editAnswer").value);
+      const explanation = $("editExplanation").value.trim();
+      if (!unit || !question || choices.some(c => !c) || !explanation) {
+        alert("単元、問題文、4つの選択肢、解説をすべて入力してください。");
+        return null;
+      }
+      return { id: editingId || makeId(), unit, question, choices, answer, explanation };
+    }
+
+    function saveFormQuestion() {
+      const q = readFormQuestion();
+      if (!q) return;
+      const index = questions.findIndex(item => item.id === q.id);
+      if (index >= 0) questions[index] = q;
+      else questions.unshift(q);
+      editingId = q.id;
+      saveQuestions();
+      renderQuestionList();
+      showToast("問題を保存しました");
+    }
+
+    function deleteCurrentQuestion() {
+      if (!editingId) { alert("削除する問題を左の一覧から選んでください。"); return; }
+      if (!confirm("この問題を削除しますか？")) return;
+      questions = questions.filter(q => q.id !== editingId);
+      saveQuestions();
+      clearForm();
+      showToast("問題を削除しました");
+    }
+
+    function exportJson() {
+      $("jsonArea").value = JSON.stringify(questions, null, 2);
+      showToast("JSONを出力しました");
+    }
+
+    function importJson() {
+      try {
+        const data = JSON.parse($("jsonArea").value);
+        if (!validateQuestions(data)) throw new Error("形式が違います");
+        questions = data.map((q, i) => ({ ...q, id: q.id || `q${Date.now()}_${i}` }));
+        editingId = null;
+        saveQuestions();
+        renderQuestionList();
+        showToast("JSONを読み込みました");
+      } catch (e) {
+        alert("JSONの形式が正しくありません。エクスポートした形式に合わせてください。");
+      }
+    }
+
+    function resetDefault() {
+      if (!confirm("追加・編集した内容を消して、初期200問に戻しますか？")) return;
+      questions = structuredClone(DEFAULT_QUESTIONS);
+      localStorage.removeItem(STORAGE_KEY);
+      editingId = null;
+      refreshUnitFilter();
+      renderQuestionList();
+      clearForm();
+      updateCount();
+      showToast("初期200問に戻しました");
+    }
+
+    function makeId() { return "q" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function shuffle(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
+    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+
+    els.nextBtn.addEventListener("click", nextQuestion);
+    els.resetBtn.addEventListener("click", startQuiz);
+    $("restartBtn").addEventListener("click", startQuiz);
+    els.fiftyBtn.addEventListener("click", useFifty);
+    els.stopBtn.addEventListener("click", useStop);
+    els.unitFilter.addEventListener("change", startQuiz);
+    $("shuffleBtn").addEventListener("click", () => { randomMode = !randomMode; $("shuffleBtn").classList.toggle("active", randomMode); startQuiz(); });
+    els.quizModeBtn.addEventListener("click", showQuizMode);
+    els.adminModeBtn.addEventListener("click", showAdminMode);
+    $("backToQuizBtn").addEventListener("click", showQuizMode);
+    $("newQuestionBtn").addEventListener("click", clearForm);
+    $("clearFormBtn").addEventListener("click", clearForm);
+    $("saveQuestionBtn").addEventListener("click", saveFormQuestion);
+    $("deleteQuestionBtn").addEventListener("click", deleteCurrentQuestion);
+    $("exportBtn").addEventListener("click", exportJson);
+    $("importBtn").addEventListener("click", importJson);
+    $("resetDefaultBtn").addEventListener("click", resetDefault);
+    els.adminSearch.addEventListener("input", renderQuestionList);
+
+    refreshUnitFilter();
+    updateCount();
+    startQuiz();
+  </script>
+</body>
+</html>
