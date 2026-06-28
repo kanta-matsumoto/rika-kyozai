@@ -686,7 +686,7 @@
       border-radius: 999px;
     }
 
-    /* 回路装置 */
+    /* 電源装置 */
     .obj-circuit {
       left: 740px;
       bottom: 240px;
@@ -1209,7 +1209,7 @@
             <span class="mark">?</span>
           </button>
 
-          <button class="obj obj-circuit" data-spot="circuit" data-label="回路装置">
+          <button class="obj obj-circuit" data-spot="circuit" data-label="電源装置">
             <div class="board"></div>
             <div class="wire1"></div>
             <div class="wire2"></div>
@@ -1364,7 +1364,7 @@
         "一番下のC層の裏に電池が隠れている。"
       ],
       circuit: [
-        "回路装置には、まだ道具が足りないかもしれない。",
+        "電源装置には、まだ道具が足りないかもしれない。",
         "導線と電池が必要。",
         "電流計は直列、電圧計は並列。"
       ],
@@ -1846,7 +1846,7 @@
         onCorrect: () => {
           state.solved.geology = true;
           addItem("電池");
-          state.currentTarget = "導線と電池がそろった。回路装置を調べよう。";
+          state.currentTarget = "導線と電池がそろった。電源装置を調べよう。";
           saveState();
           render();
           setMessage("地層ポスターの裏から電池を手に入れた。");
@@ -1860,22 +1860,22 @@
       if (!hasItem("導線") || !hasItem("電池")) {
         openInfo(
           "circuit",
-          "回路装置",
+          "電源装置",
           `
             <div class="question-box">
-              <p>回路装置はあるが、まだ準備が足りない。</p>
+              <p>電源装置はあるが、まだ準備が足りない。</p>
               <p>必要そうなもの：<strong>導線</strong>、<strong>電池</strong></p>
             </div>
           `
         );
-        setMessage("回路装置を動かすには、導線と電池が必要だ。");
+        setMessage("電源装置を動かすには、導線と電池が必要だ。");
         return;
       }
 
       if (state.solved.circuit) {
         openInfo(
           "circuit",
-          "回路装置",
+          "電源装置",
           `
             <div class="question-box">
               <p>電流計は直列、電圧計は並列につないだ。</p>
@@ -1888,7 +1888,7 @@
 
       askQuestion({
         id: "circuit",
-        title: "回路装置",
+        title: "電源装置",
         question: `
           <p>回路を完成させてライトをつけたい。</p>
           <p><strong>電流計と電圧計の正しいつなぎ方はどれか。</strong></p>
@@ -1906,7 +1906,7 @@
           state.currentTarget = "4つの数字がそろった。ドアのロックを開けよう。";
           saveState();
           render();
-          setMessage("回路装置から電気の数字4を得た。");
+          setMessage("電源装置から電気の数字4を得た。");
         },
         okText: "正解。電流計は直列、電圧計は並列。ライトがつき、壁に4が浮かび上がった。",
         ngText: "違う。電流計は直列、電圧計は並列。"
