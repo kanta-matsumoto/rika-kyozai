@@ -1,53 +1,422 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>理科教材</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中学校理科 教材ページ</title>
+
   <style>
+    :root {
+      --bg: #f4f1e8;
+      --paper: #fffdf7;
+      --ink: #1f2a2e;
+      --sub: #5f6f73;
+      --green: #2f6f5e;
+      --blue: #315f82;
+      --yellow: #e8c45c;
+      --line: #ded6c6;
+      --shadow: 0 18px 40px rgba(39, 45, 47, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-      padding: 30px;
-      background: #f7f7f7;
-      color: #222;
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+      background:
+        linear-gradient(rgba(244, 241, 232, 0.92), rgba(244, 241, 232, 0.92)),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 31px,
+          rgba(49, 95, 130, 0.08) 32px
+        );
+      color: var(--ink);
+      line-height: 1.7;
     }
-    .card {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+
+    header {
+      padding: 24px;
     }
-    h1 {
-      color: #1f5f8b;
+
+    .nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
     }
-    button {
-      font-size: 18px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #1f5f8b;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--green);
       color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .nav a {
+      color: var(--sub);
+      text-decoration: none;
+      font-size: 14px;
+      margin-left: 16px;
+    }
+
+    .hero {
+      max-width: 1100px;
+      margin: 36px auto 0;
+      padding: 0 24px 56px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 42px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(232, 196, 92, 0.28);
+    }
+
+    .label {
+      display: inline-block;
+      background: #e7f0ec;
+      color: var(--green);
+      border: 1px solid #cfe2da;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.15;
+      margin: 0 0 18px;
+      letter-spacing: 0.03em;
+    }
+
+    .lead {
+      font-size: 18px;
+      color: var(--sub);
+      margin: 0 0 26px;
+      max-width: 620px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-block;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 10px 20px rgba(47, 111, 94, 0.22);
+    }
+
+    .secondary {
+      background: white;
+      color: var(--blue);
+      border: 1px solid var(--line);
+    }
+
+    .side-panel {
+      background: #223238;
+      color: white;
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .side-panel h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    .mini-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0;
+    }
+
+    .mini-list li {
+      padding: 13px 0;
+      border-top: 1px solid rgba(255,255,255,0.16);
+      color: rgba(255,255,255,0.86);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      margin: 10px 0 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(39, 45, 47, 0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      color: var(--sub);
+      margin: 0 0 18px;
+      font-size: 15px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue);
+      background: #e8f0f5;
+      padding: 5px 9px;
+      border-radius: 999px;
+    }
+
+    .tool-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 14px;
+    }
+
+    .tool-card h3 {
+      margin: 0 0 6px;
+    }
+
+    .tool-card p {
+      margin: 0;
+      color: var(--sub);
+      font-size: 15px;
+    }
+
+    .status {
+      font-size: 13px;
+      font-weight: 700;
+      color: #8a5a00;
+      background: #fff1c8;
+      padding: 7px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: #edf7f2;
+      border-left: 5px solid var(--green);
+      border-radius: 10px;
+      display: none;
+      color: #24483f;
+      font-weight: 700;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px;
+      text-align: center;
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    @media (max-width: 820px) {
+      .hero {
+        grid-template-columns: 1fr;
+        margin-top: 12px;
+      }
+
+      .hero-card {
+        padding: 30px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-card {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav a {
+        margin-left: 0;
+        margin-right: 12px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>中学校理科 教材ページ</h1>
-    <p>ここに理科のシミュレーション教材を置いていきます。</p>
+  <header>
+    <div class="nav">
+      <div class="logo">
+        <div class="logo-mark">理</div>
+        <span>中学校理科 教材ページ</span>
+      </div>
+      <nav>
+        <a href="#tools">教材一覧</a>
+        <a href="#about">使い方</a>
+      </nav>
+    </div>
+  </header>
 
-    <h2>サンプル：確認ボタン</h2>
-    <p>ボタンを押すとメッセージが表示されます。</p>
+  <section class="hero">
+    <div class="hero-card">
+      <span class="label">授業で使えるWeb教材</span>
+      <h1>考えて、試して、発見する理科。</h1>
+      <p class="lead">
+        中学校理科の学習を、シミュレーションや操作活動を通して深めるための教材ページです。
+        説明を読むだけでなく、自分で動かして結果を確かめます。
+      </p>
+      <div class="actions">
+        <a class="button primary" href="#tools">教材を見る</a>
+        <button class="button secondary" onclick="showMessage()">動作確認</button>
+      </div>
+      <div id="message" class="message">
+        ページは正しく動いています。教材を追加すると、このページから開けるようになります。
+      </div>
+    </div>
 
-    <button onclick="showMessage()">確認する</button>
+    <aside class="side-panel">
+      <h2>このページでできること</h2>
+      <ul class="mini-list">
+        <li>シミュレーション教材を一覧で管理</li>
+        <li>URLやQRコードで生徒に配布</li>
+        <li>スマホ・タブレット・PCで表示</li>
+        <li>授業ごとに教材を追加</li>
+      </ul>
+    </aside>
+  </section>
 
-    <p id="message"></p>
-  </div>
+  <main>
+    <section id="about">
+      <h2 class="section-title">教材の方針</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>短くわかる</h3>
+          <p>画面上の説明は最小限にして、操作しながら理解できるようにします。</p>
+          <span class="tag">中学生向け</span>
+        </article>
+
+        <article class="card">
+          <h3>試して気づく</h3>
+          <p>結果を予想し、何度も試し、規則性を自分で見つける構成にします。</p>
+          <span class="tag">探究型</span>
+        </article>
+
+        <article class="card">
+          <h3>授業で使いやすい</h3>
+          <p>QRコードで開き、準備時間を減らし、すぐ活動に入れる形を目指します。</p>
+          <span class="tag">ICT活用</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="tools">
+      <h2 class="section-title">教材一覧</h2>
+
+      <article class="tool-card">
+        <div>
+          <h3>メンデル実験シミュレーター</h3>
+          <p>親の遺伝子型を選び、子の形質がどのような割合で現れるかを調べる教材です。</p>
+        </div>
+        <span class="status">準備中</span>
+      </article>
+
+      <article class="tool-card">
+        <div>
+          <h3>確認ボタン サンプル</h3>
+          <p>JavaScriptが正しく動くかを確認するためのサンプルです。</p>
+        </div>
+        <button class="button secondary" onclick="showMessage()">確認する</button>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 中学校理科 教材ページ｜公開してよい教材のみ掲載
+  </footer>
 
   <script>
     function showMessage() {
-      document.getElementById("message").textContent = "教材ページが正しく動いています。";
+      const message = document.getElementById("message");
+      message.style.display = "block";
+      message.textContent = "ページは正しく動いています。教材を追加すると、このページから開けるようになります。";
     }
   </script>
 </body>
