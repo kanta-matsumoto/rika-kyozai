@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>理科教材</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      background: #f7f7f7;
+      color: #222;
+    }
+    .card {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    h1 {
+      color: #1f5f8b;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #1f5f8b;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>中学校理科 教材ページ</h1>
+    <p>ここに理科のシミュレーション教材を置いていきます。</p>
+
+    <h2>サンプル：確認ボタン</h2>
+    <p>ボタンを押すとメッセージが表示されます。</p>
+
+    <button onclick="showMessage()">確認する</button>
+
+    <p id="message"></p>
+  </div>
+
+  <script>
+    function showMessage() {
+      document.getElementById("message").textContent = "教材ページが正しく動いています。";
+    }
+  </script>
+</body>
+</html>
