@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中学理科バトルアリーナ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="arena-bg" aria-hidden="true">
+    <span class="ring ring-a"></span>
+    <span class="ring ring-b"></span>
+    <span class="grid-floor"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">SBA</span>
+      <div>
+        <p class="eyebrow">Science Battle Arena</p>
+        <h1>中学理科バトルアリーナ</h1>
+      </div>
+    </div>
+    <nav class="top-nav" aria-label="メインメニュー">
+      <button data-screen="home" class="nav-btn active">ホーム</button>
+      <button data-screen="units" class="nav-btn">ステージ</button>
+      <button data-screen="review" class="nav-btn">復習</button>
+    </nav>
+  </header>
+
+  <main class="app-shell">
+    <section id="home" class="screen active">
+      <div class="hero-card arena-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Battle Start</p>
+          <h2>理科の知識で<br />アリーナを突破せよ。</h2>
+          <p class="lead">正解で攻撃。不正解で反撃。3体倒すとボス戦。間違えた問題は復習リストに残ります。</p>
+          <div class="hero-actions">
+            <button class="primary" id="startFromHome">ステージを選ぶ</button>
+            <button class="secondary" data-screen="review">苦手問題に挑戦</button>
+          </div>
+        </div>
+
+        <div class="home-arena-visual" aria-hidden="true">
+          <div class="arena-orb enemy-orb">BOSS</div>
+          <div class="slash slash-1"></div>
+          <div class="slash slash-2"></div>
+          <div class="arena-orb player-orb">YOU</div>
+        </div>
+
+        <div class="rank-panel">
+          <span class="rank-label">CURRENT RANK</span>
+          <strong id="homeRank">D 理科見習い</strong>
+          <p id="homeExp">EXP 0</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card"><span>総正解</span><strong id="statCorrect">0</strong></article>
+        <article class="stat-card"><span>総不正解</span><strong id="statWrong">0</strong></article>
+        <article class="stat-card"><span>最大コンボ</span><strong id="statCombo">0</strong></article>
+        <article class="stat-card"><span>苦手問題</span><strong id="statReview">0</strong></article>
+      </div>
+    </section>
+
+    <section id="units" class="screen">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Select Stage</p>
+          <h2>ステージを選ぶ</h2>
+        </div>
+        <div class="filter-row" aria-label="学年で絞り込み">
+          <button class="chip active" data-grade-filter="all">全学年</button>
+          <button class="chip" data-grade-filter="1">中1</button>
+          <button class="chip" data-grade-filter="2">中2</button>
+          <button class="chip" data-grade-filter="3">中3</button>
+        </div>
+      </div>
+      <div id="unitGrid" class="unit-grid"></div>
+    </section>
+
+    <section id="battle" class="screen">
+      <div class="battle-layout arena-panel">
+        <div class="battle-hud">
+          <div class="fighter-card player-card">
+            <span class="fighter-label">PLAYER</span>
+            <strong>理科バトラー</strong>
+            <div class="hp-bar"><div id="playerHpBar"></div></div>
+            <p id="playerHpText">HP 100 / 100</p>
+          </div>
+
+          <div class="versus-box">
+            <p id="battleStage">植物ステージ</p>
+            <strong>VS</strong>
+            <span id="battleProgress">通常戦</span>
+          </div>
+
+          <div class="fighter-card enemy-card">
+            <span class="fighter-label" id="enemyType">ENEMY</span>
+            <strong id="enemyName">葉緑体スライム</strong>
+            <div class="hp-bar enemy"><div id="enemyHpBar"></div></div>
+            <p id="enemyHpText">HP 70 / 70</p>
+          </div>
+        </div>
+
+        <div class="battle-stage">
+          <div class="combatant player-avatar">
+            <span>YOU</span>
+          </div>
+          <div class="combo-core">
+            <span id="comboText">0 COMBO</span>
+            <small id="comboBonus">連続正解で攻撃力アップ</small>
+          </div>
+          <div class="combatant enemy-avatar">
+            <span id="enemyInitial">敵</span>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-meta">
+            <span id="questionUnit">中1・植物</span>
+            <span id="questionDifficulty">基礎</span>
+          </div>
+          <h2 id="questionText">問題文</h2>
+          <div id="choices" class="choice-grid"></div>
+          <div id="feedback" class="feedback hidden"></div>
+          <button id="nextQuestion" class="primary hidden">次のターンへ</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" class="screen">
+      <div class="result-card arena-panel">
+        <p class="eyebrow">Battle Result</p>
+        <h2 id="resultTitle">勝利</h2>
+        <p id="resultMessage" class="lead"></p>
+        <div class="result-grid">
+          <div><span>正解</span><strong id="resultCorrect">0</strong></div>
+          <div><span>不正解</span><strong id="resultWrong">0</strong></div>
+          <div><span>最大コンボ</span><strong id="resultCombo">0</strong></div>
+          <div><span>獲得EXP</span><strong id="resultExp">0</strong></div>
+        </div>
+        <div id="titleEarned" class="title-earned hidden"></div>
+        <div class="hero-actions center">
+          <button class="primary" id="retryBattle">同じステージに再挑戦</button>
+          <button class="secondary" data-screen="units">ステージ選択へ</button>
+          <button class="secondary" data-screen="home">ホームへ</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="review" class="screen">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Weak Point Battle</p>
+          <h2>苦手問題リスト</h2>
+        </div>
+        <button class="secondary" id="startReviewBattle">苦手問題だけでバトル</button>
+      </div>
+      <div id="reviewList" class="review-list"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>学習記録と苦手問題は、この端末のブラウザに保存されます。</span>
+  </footer>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
