@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>メンデル実験シミュレーター</title>
+<style>
+  :root {
+    --bg: #ebe7dd;
+    --paper: #fffdf7;
+    --paper2: #f7f2e8;
+    --ink: #222;
+    --sub: #5f5a50;
+    --line: #8c867a;
+    --thin: #d6d0c4;
+    --a: #f7f0dc;
+    --b: #edf2e7;
+    --good: #e9f1df;
+    --bad: #f3e6cf;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
+    line-height: 1.65;
+  }
+  .page { max-width: 1040px; margin: 18px auto; padding: 0 12px 40px; }
+  header { background: var(--paper); border: 1px solid var(--line); padding: 16px 18px; }
+  h1 { margin: 0; font-size: clamp(1.45rem, 4vw, 2rem); letter-spacing: .03em; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+  .lead { margin: 10px 0 0; color: var(--sub); }
+  .lesson-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 12px 0; }
+  .lesson-tabs button { min-height: 46px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); font-weight: 700; cursor: pointer; padding: 8px; font-size: .95rem; }
+  .lesson-tabs button.active { background: #ddd3c2; border: 2px solid var(--ink); }
+  main { display: grid; gap: 12px; }
+  .panel { display: none; background: var(--paper); border: 1px solid var(--line); padding: 16px; }
+  .panel.active { display: block; }
+  h2 { margin: 0 0 12px; font-size: 1.25rem; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  h3 { margin: 12px 0 8px; font-size: 1.05rem; }
+  p { margin: 0 0 10px; }
+  .one-line { border: 1px solid var(--line); background: var(--paper2); padding: 10px 12px; font-weight: 700; }
+  .small { font-size: .92rem; color: var(--sub); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .box { border: 1px solid var(--line); background: #fff; padding: 12px; }
+  label { display: block; font-weight: 700; margin-bottom: 4px; }
+  select, input, textarea { width: 100%; border: 1px solid var(--line); background: #fff; padding: 10px; font: inherit; border-radius: 0; }
+  textarea { min-height: 92px; resize: vertical; }
+  .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+  button { border: 1px solid var(--ink); background: #f3efe5; color: var(--ink); padding: 9px 12px; font: inherit; font-weight: 700; cursor: pointer; border-radius: 0; }
+  button:hover { background: #e5dccd; }
+  button.main { background: #ddd3c2; }
+  button.sub { border-color: var(--line); color: var(--sub); }
+  .choice-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+  .choice-card { min-height: 74px; border: 1px solid var(--line); background: #fff; padding: 10px; text-align: center; cursor: pointer; }
+  .choice-card strong { display: block; font-size: 1.15rem; }
+  .choice-card.selected { outline: 3px solid var(--ink); background: var(--paper2); }
+  .parent-board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+  .parent-box { border: 1px solid var(--line); background: #fff; padding: 12px; }
+  .parent-title { display: flex; justify-content: space-between; gap: 8px; align-items: center; border-bottom: 1px solid var(--thin); padding-bottom: 6px; margin-bottom: 10px; font-weight: 700; }
+  .gene-row { display: flex; flex-wrap: wrap; gap: 8px; min-height: 58px; align-items: center; }
+  .gene-card { width: 54px; height: 54px; display: grid; place-items: center; border: 2px solid var(--ink); background: var(--a); font-size: 1.55rem; font-weight: 800; cursor: grab; user-select: none; }
+  .gene-card.from-b { background: var(--b); }
+  .gene-card.selected { outline: 4px solid #c9b989; }
+  .child-area { margin-top: 12px; border: 1px solid var(--line); background: var(--paper2); padding: 12px; }
+  .slots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .slot { min-height: 76px; display: grid; place-items: center; border: 2px dashed var(--line); background: #fff; color: var(--sub); text-align: center; font-weight: 700; }
+  .slot.filled { border-style: solid; color: var(--ink); font-size: 1.55rem; }
+  .slot.over { background: #f5eacb; }
+  .child-result { margin-top: 10px; border: 1px solid var(--line); background: #fff; padding: 12px; font-weight: 700; min-height: 54px; }
+  .seed-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .seed { width: 36px; height: 36px; border: 1px solid var(--line); display: grid; place-items: center; background: #fff; font-size: .78rem; font-weight: 700; }
+  .seed.dom { background: var(--good); }
+  .seed.rec { background: var(--bad); }
+  .result-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-top: 10px; }
+  .result-strip div { padding: 10px; text-align: center; border-right: 1px solid var(--line); background: #fff; }
+  .result-strip div:last-child { border-right: 0; }
+  .result-strip strong { display: block; font-size: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 10px; }
+  th, td { border: 1px solid var(--line); padding: 9px; text-align: center; }
+  th { background: var(--paper2); }
+  .bar-line { display: grid; grid-template-columns: 82px 1fr 68px; gap: 8px; align-items: center; margin: 9px 0; }
+  .bar { height: 24px; border: 1px solid var(--line); background: #fff; position: relative; }
+  .fill { height: 100%; width: 0%; background: #b6c4a6; }
+  .fill.rec { background: #cdbb94; }
+  .mark { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--ink); }
+  .punnett { display: grid; grid-template-columns: 70px 1fr 1fr; border: 1px solid var(--line); margin-top: 10px; }
+  .punnett div { min-height: 58px; display: grid; place-items: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; font-weight: 700; }
+  .punnett div:nth-child(3n) { border-right: 0; }
+  .punnett div:nth-last-child(-n+3) { border-bottom: 0; }
+  .head { background: var(--paper2); color: var(--sub); }
+  .dom-cell { background: var(--good); }
+  .rec-cell { background: var(--bad); }
+  details { border: 1px solid var(--line); background: #fff; padding: 10px 12px; margin-top: 10px; }
+  summary { cursor: pointer; font-weight: 700; }
+  .teacher-note { font-size: .9rem; color: var(--sub); border: 1px dashed var(--line); padding: 10px; background: #fff; margin-top: 12px; }
+  @media (max-width: 760px) {
+    .lesson-tabs { grid-template-columns: 1fr; }
+    .grid2, .grid3, .parent-board, .choice-cards { grid-template-columns: 1fr; }
+    button { width: 100%; }
+    .bar-line { grid-template-columns: 68px 1fr 58px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .lesson-tabs, button { display: none !important; }
+    .panel { display: block !important; break-inside: avoid; }
+    .page { margin: 0; max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>メンデル実験シミュレーター</h1>
+    <p class="lead">カードを1枚ずつ動かして、親から子へ遺伝子が受けつがれるしくみを調べる。</p>
+  </header>
+
+  <nav class="lesson-tabs" aria-label="学習の流れ">
+    <button class="tab active" data-panel="q">1 問い</button>
+    <button class="tab" data-panel="card">2 カード実験</button>
+    <button class="tab" data-panel="many">3 たくさん試す</button>
+    <button class="tab" data-panel="rule">4 しくみ</button>
+    <button class="tab" data-panel="note">5 まとめ</button>
+  </nav>
+
+  <main>
+    <section id="q" class="panel active">
+      <h2>1. 今日の問い</h2>
+      <div class="one-line">親が Aa と Aa のとき、子にはどんな形質がどのくらい現れるだろうか。</div>
+      <h3>まずは予想カードを選ぶ</h3>
+      <p class="small">説明を読む前に、近いと思うカードを1つ選びます。</p>
+      <div class="choice-cards" id="predictionCards">
+        <div class="choice-card" data-prediction="dominant-only"><strong>顕性だけ</strong>潜性は出ない</div>
+        <div class="choice-card selected" data-prediction="three-one"><strong>約3：1</strong>顕性が多い</div>
+        <div class="choice-card" data-prediction="one-one"><strong>約1：1</strong>半分ずつ</div>
+        <div class="choice-card" data-prediction="random"><strong>ばらばら</strong>規則性はない</div>
+      </div>
+      <div class="grid2">
+        <div class="box"><label for="parentA">親A</label><select id="parentA"><option value="AA">AA</option><option value="Aa" selected>Aa</option><option value="aa">aa</option></select></div>
+        <div class="box"><label for="parentB">親B</label><select id="parentB"><option value="AA">AA</option><option value="Aa" selected>Aa</option><option value="aa">aa</option></select></div>
+      </div>
+      <details><summary>記号の意味</summary><p>Aは顕性の遺伝子、aは潜性の遺伝子として考えます。子は親Aから1つ、親Bから1つ、合計2つの遺伝子を受け取ります。</p></details>
+      <div class="button-row"><button class="main next" data-next="card">カード実験へ進む</button></div>
+    </section>
+
+    <section id="card" class="panel">
+      <h2>2. カード実験</h2>
+      <p class="small">親Aから1枚、親Bから1枚、カードを子の場所へ入れます。ドラッグしても、タップしても使えます。</p>
+      <div class="parent-board">
+        <div class="parent-box"><div class="parent-title"><span>親Aのカード</span><span id="parentALabel">Aa</span></div><div class="gene-row" id="cardsA"></div></div>
+        <div class="parent-box"><div class="parent-title"><span>親Bのカード</span><span id="parentBLabel">Aa</span></div><div class="gene-row" id="cardsB"></div></div>
+      </div>
+      <div class="child-area">
+        <h3>子が受け取ったカード</h3>
+        <div class="slots"><div id="slotA" class="slot" data-side="A">親Aから1枚</div><div id="slotB" class="slot" data-side="B">親Bから1枚</div></div>
+        <div id="childResult" class="child-result">カードを2枚入れると、子の遺伝子型が出ます。</div>
+      </div>
+      <div class="button-row"><button class="main" id="randomDraw">ランダムに1回引く</button><button id="recordChild">この結果を記録する</button><button class="sub" id="clearCards">カードを戻す</button></div>
+      <div class="seed-row" id="manualSeeds"></div>
+      <div class="result-strip"><div><span>合計</span><strong id="manualTotal">0</strong></div><div><span>顕性</span><strong id="manualDom">0</strong></div><div><span>潜性</span><strong id="manualRec">0</strong></div></div>
+      <div class="button-row"><button class="next" data-next="many">たくさん試すへ進む</button></div>
+    </section>
+
+    <section id="many" class="panel">
+      <h2>3. たくさん試す</h2>
+      <p class="small">1回だけでは結果が偏ることがあります。回数を変えて、割合がどう変わるか見ます。</p>
+      <div class="grid3">
+        <div class="box"><label for="runCount">実験回数</label><select id="runCount"><option value="10">10回</option><option value="30">30回</option><option value="100" selected>100回</option><option value="500">500回</option><option value="1000">1000回</option></select></div>
+        <div class="box"><label for="groupCount">班の数</label><select id="groupCount"><option value="4">4班</option><option value="6" selected>6班</option><option value="8">8班</option></select></div>
+        <div class="box"><label for="groupRunCount">1班の回数</label><select id="groupRunCount"><option value="10">10回</option><option value="30" selected>30回</option><option value="100">100回</option></select></div>
+      </div>
+      <div class="button-row"><button class="main" id="runMany">選んだ回数で実験</button><button id="runGroups">班ごとの結果を作る</button><button class="sub" id="resetResults">結果をリセット</button></div>
+      <div class="result-strip"><div><span>合計</span><strong id="total">0</strong></div><div><span>顕性</span><strong id="dom">0</strong></div><div><span>潜性</span><strong id="rec">0</strong></div></div>
+      <h3>現在の割合</h3><div id="bars"></div><p class="small">棒の中の黒線は理論値です。Aa×Aaなら、顕性75%、潜性25%です。</p>
+      <h3>最近の結果カード</h3><div class="seed-row" id="recentSeeds"></div>
+      <h3>班ごとの結果カード</h3><div id="groupCards" class="grid3"></div>
+      <details><summary>遺伝子型ごとの数も見る</summary><table><thead><tr><th>遺伝子型</th><th>数</th><th>割合</th><th>理論値</th></tr></thead><tbody id="detailTable"></tbody></table></details>
+      <div class="button-row"><button class="next" data-next="rule">しくみを見るへ進む</button></div>
+    </section>
+
+    <section id="rule" class="panel">
+      <h2>4. しくみを見る</h2>
+      <p class="small">「なぜその割合になるのか」を、組み合わせ表で確認します。</p>
+      <div id="punnett" class="punnett"></div>
+      <div class="grid2"><div class="box"><h3>大事な考え方</h3><p>子は、親Aから1つ、親Bから1つ、遺伝子を受け取ります。</p><p>Aaの親からは、Aが出る場合とaが出る場合があります。</p></div><div class="box"><h3>この組み合わせの理論値</h3><p id="theoryText">計算中</p></div></div>
+      <details><summary>よくあるまちがい</summary><p>「顕性形質の子は必ずAA」とは限りません。Aaでも顕性形質が現れます。</p><p>「4回やれば必ず3：1になる」とも限りません。回数が少ないとずれます。</p></details>
+      <div class="button-row"><button class="next" data-next="note">まとめへ進む</button></div>
+    </section>
+
+    <section id="note" class="panel">
+      <h2>5. まとめる</h2>
+      <div class="grid2"><div><label for="memo1">カード実験から分かったこと</label><textarea id="memo1" placeholder="例：子は親から1つずつ遺伝子を受け取る。"></textarea></div><div><label for="memo2">回数を増やして分かったこと</label><textarea id="memo2" placeholder="例：回数が少ないとずれるが、多くすると理論値に近づく。"></textarea></div></div>
+      <h3>まとめの型</h3><div class="one-line" id="summarySentence">AaとAaの親では、子の表現型は顕性：潜性がおよそ3：1になる。ただし、実験回数が少ないと結果はずれる。</div>
+      <div class="button-row"><button id="makeSummary">現在の結果でまとめを作る</button><button id="copySummary">まとめ文をコピー</button></div>
+      <div class="teacher-note">教師用：最初は「しくみ」を見せず、予想カードとカード実験から入ると、生徒が規則性を自分で見つけやすくなります。</div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const state = { parentA: "Aa", parentB: "Aa", selected: null, slots: { A: null, B: null }, manual: { AA: 0, Aa: 0, aa: 0 }, total: { AA: 0, Aa: 0, aa: 0 }, recent: [], prediction: "three-one" };
+  const $ = id => document.getElementById(id);
+  function gametes(genotype) { if (genotype === "AA") return ["A", "A"]; if (genotype === "aa") return ["a", "a"]; return ["A", "a"]; }
+  function normalize(a, b) { return a === "A" || b === "A" ? (a === "a" || b === "a" ? "Aa" : "AA") : "aa"; }
+  function phenotype(genotype) { return genotype === "aa" ? "潜性" : "顕性"; }
+  function isRec(genotype) { return genotype === "aa"; }
+  function theory() { const a = gametes(state.parentA), b = gametes(state.parentB), result = { AA: 0, Aa: 0, aa: 0 }; for (const ga of a) for (const gb of b) result[normalize(ga, gb)] += 0.25; return result; }
+  function drawChild() { const a = gametes(state.parentA), b = gametes(state.parentB); const ga = a[Math.floor(Math.random() * a.length)], gb = b[Math.floor(Math.random() * b.length)]; return { ga, gb, genotype: normalize(ga, gb) }; }
+  function switchPanel(id) { document.querySelectorAll(".panel").forEach(p => p.classList.remove("active")); document.querySelectorAll(".tab").forEach(t => t.classList.remove("active")); $(id).classList.add("active"); document.querySelector(`.tab[data-panel="${id}"]`).classList.add("active"); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  function renderAll() { state.parentA = $("parentA").value; state.parentB = $("parentB").value; $("parentALabel").textContent = state.parentA; $("parentBLabel").textContent = state.parentB; renderCards(); renderSlots(); renderManualResult(); renderManualTotals(); renderTotals(); renderBars(); renderRecentSeeds(); renderDetailTable(); renderPunnett(); renderTheoryText(); }
+  function renderCards() { renderCardBank("A", state.parentA, $("cardsA")); renderCardBank("B", state.parentB, $("cardsB")); }
+  function renderCardBank(side, genotype, container) { const list = gametes(genotype); container.innerHTML = list.map((g, i) => `<div class="gene-card ${side === "B" ? "from-b" : ""} ${state.selected && state.selected.side === side && state.selected.index === i ? "selected" : ""}" draggable="true" tabindex="0" role="button" data-side="${side}" data-index="${i}" data-gene="${g}" aria-label="親${side}の${g}カード">${g}</div>`).join(""); container.querySelectorAll(".gene-card").forEach(card => { card.addEventListener("click", () => tapCard(card)); card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tapCard(card); } }); card.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", JSON.stringify({ side: card.dataset.side, gene: card.dataset.gene })); }); }); }
+  function tapCard(card) { const side = card.dataset.side; state.selected = { side, index: Number(card.dataset.index), gene: card.dataset.gene }; state.slots[side] = card.dataset.gene; renderAll(); }
+  function setupSlots() { ["A", "B"].forEach(side => { const slot = $(`slot${side}`); slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("over"); }); slot.addEventListener("dragleave", () => slot.classList.remove("over")); slot.addEventListener("drop", e => { e.preventDefault(); slot.classList.remove("over"); const data = JSON.parse(e.dataTransfer.getData("text/plain")); if (data.side !== side) { slot.textContent = `親${side}のカードを入れる`; setTimeout(renderSlots, 600); return; } state.slots[side] = data.gene; state.selected = null; renderAll(); }); }); }
+  function renderSlots() { ["A", "B"].forEach(side => { const slot = $(`slot${side}`); const gene = state.slots[side]; slot.textContent = gene ? gene : `親${side}から1枚`; slot.classList.toggle("filled", Boolean(gene)); }); }
+  function renderManualResult() { const a = state.slots.A, b = state.slots.B; if (!a || !b) { $("childResult").textContent = "カードを2枚入れると、子の遺伝子型が出ます。"; return; } const child = normalize(a, b); $("childResult").innerHTML = `親Aから <strong>${a}</strong>、親Bから <strong>${b}</strong>。子は <strong>${child}</strong>、形質は <strong>${phenotype(child)}</strong>。`; }
+  function clearCards() { state.slots = { A: null, B: null }; state.selected = null; renderAll(); }
+  function randomDraw() { const child = drawChild(); state.slots = { A: child.ga, B: child.gb }; state.selected = null; renderAll(); }
+  function recordManual() { if (!state.slots.A || !state.slots.B) { $("childResult").textContent = "先に親Aと親Bから1枚ずつカードを入れます。"; return; } const child = normalize(state.slots.A, state.slots.B); state.manual[child]++; state.total[child]++; addRecent(child); clearCards(); renderAll(); }
+  function renderManualTotals() { const total = state.manual.AA + state.manual.Aa + state.manual.aa; $("manualTotal").textContent = total; $("manualDom").textContent = state.manual.AA + state.manual.Aa; $("manualRec").textContent = state.manual.aa; const seedList = []; Object.entries(state.manual).forEach(([g, count]) => { for (let i = 0; i < count; i++) seedList.push(g); }); $("manualSeeds").innerHTML = seedList.slice(-40).map(seedHtml).join(""); }
+  function runMany() { const n = Number($("runCount").value); for (let i = 0; i < n; i++) { const child = drawChild().genotype; state.total[child]++; addRecent(child); } renderAll(); }
+  function resetResults() { state.total = { AA: 0, Aa: 0, aa: 0 }; state.manual = { AA: 0, Aa: 0, aa: 0 }; state.recent = []; $("groupCards").innerHTML = ""; clearCards(); renderAll(); }
+  function addRecent(g) { state.recent.unshift(g); if (state.recent.length > 60) state.recent.pop(); }
+  function totalCount(obj) { return obj.AA + obj.Aa + obj.aa; }
+  function pct(count, total) { return total ? Math.round((count / total) * 1000) / 10 : 0; }
+  function renderTotals() { const total = totalCount(state.total); $("total").textContent = total; $("dom").textContent = state.total.AA + state.total.Aa; $("rec").textContent = state.total.aa; }
+  function renderBars() { const total = totalCount(state.total), dom = state.total.AA + state.total.Aa, rec = state.total.aa, t = theory(); $("bars").innerHTML = `${barHtml("顕性", pct(dom, total), (t.AA + t.Aa) * 100, "")} ${barHtml("潜性", pct(rec, total), t.aa * 100, "rec")}`; }
+  function barHtml(label, value, target, cls) { return `<div class="bar-line"><strong>${label}</strong><div class="bar"><div class="fill ${cls}" style="width:${value}%"></div><div class="mark" style="left:${target}%"></div></div><span>${value}%</span></div>`; }
+  function renderRecentSeeds() { $("recentSeeds").innerHTML = state.recent.map(seedHtml).join(""); }
+  function seedHtml(g) { return `<span class="seed ${isRec(g) ? "rec" : "dom"}" title="${g}">${phenotype(g)}</span>`; }
+  function renderDetailTable() { const total = totalCount(state.total), t = theory(); $("detailTable").innerHTML = ["AA", "Aa", "aa"].map(g => `<tr><td>${g}</td><td>${state.total[g]}</td><td>${pct(state.total[g], total)}%</td><td>${Math.round(t[g] * 1000) / 10}%</td></tr>`).join(""); }
+  function runGroups() { const groups = Number($("groupCount").value), n = Number($("groupRunCount").value), cards = []; for (let g = 1; g <= groups; g++) { const result = { AA: 0, Aa: 0, aa: 0 }; for (let i = 0; i < n; i++) result[drawChild().genotype]++; const dom = result.AA + result.Aa, rec = result.aa; cards.push(`<div class="box"><strong>${g}班</strong><br>顕性 ${dom}個（${pct(dom, n)}%）<br>潜性 ${rec}個（${pct(rec, n)}%）</div>`); } $("groupCards").innerHTML = cards.join(""); }
+  function renderPunnett() { const a = gametes(state.parentA), b = gametes(state.parentB); const cells = [`<div class="head">親A↓<br>親B→</div>`, `<div class="head">${b[0]}</div>`, `<div class="head">${b[1]}</div>`]; for (let i = 0; i < 2; i++) { cells.push(`<div class="head">${a[i]}</div>`); for (let j = 0; j < 2; j++) { const child = normalize(a[i], b[j]); cells.push(`<div class="${isRec(child) ? "rec-cell" : "dom-cell"}">${child}<br><small>${phenotype(child)}</small></div>`); } } $("punnett").innerHTML = cells.join(""); }
+  function renderTheoryText() { const t = theory(), dom = (t.AA + t.Aa) * 100, rec = t.aa * 100; $("theoryText").innerHTML = `遺伝子型：AA ${Math.round(t.AA * 100)}%、Aa ${Math.round(t.Aa * 100)}%、aa ${Math.round(t.aa * 100)}%<br>表現型：顕性 ${Math.round(dom)}%、潜性 ${Math.round(rec)}%`; $("summarySentence").textContent = `${state.parentA}と${state.parentB}の親では、理論上、子の表現型は顕性${Math.round(dom)}%、潜性${Math.round(rec)}%になる。実験回数が少ないと結果はずれるが、回数を増やすと理論値に近づきやすい。`; }
+  function makeSummary() { const total = totalCount(state.total), dom = state.total.AA + state.total.Aa, rec = state.total.aa, t = theory(), theoryDom = Math.round((t.AA + t.Aa) * 100), theoryRec = Math.round(t.aa * 100); if (!total) { renderTheoryText(); return; } $("summarySentence").textContent = `${state.parentA}と${state.parentB}の親で${total}回実験した結果、顕性は${dom}個（${pct(dom, total)}%）、潜性は${rec}個（${pct(rec, total)}%）だった。理論値は顕性${theoryDom}%、潜性${theoryRec}%なので、回数を増やすと理論値に近づくことが分かる。`; }
+  async function copySummary() { const text = $("summarySentence").textContent; try { await navigator.clipboard.writeText(text); $("summarySentence").textContent = text + "（コピーしました）"; } catch { alert("コピーできませんでした。文章を選択してコピーしてください。"); } }
+  function setupEvents() { document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => switchPanel(btn.dataset.panel))); document.querySelectorAll(".next").forEach(btn => btn.addEventListener("click", () => switchPanel(btn.dataset.next))); document.querySelectorAll(".choice-card").forEach(card => card.addEventListener("click", () => { document.querySelectorAll(".choice-card").forEach(c => c.classList.remove("selected")); card.classList.add("selected"); state.prediction = card.dataset.prediction; })); $("parentA").addEventListener("change", resetResults); $("parentB").addEventListener("change", resetResults); $("randomDraw").addEventListener("click", randomDraw); $("recordChild").addEventListener("click", recordManual); $("clearCards").addEventListener("click", clearCards); $("runMany").addEventListener("click", runMany); $("runGroups").addEventListener("click", runGroups); $("resetResults").addEventListener("click", resetResults); $("makeSummary").addEventListener("click", makeSummary); $("copySummary").addEventListener("click", copySummary); setupSlots(); }
+  setupEvents(); renderAll();
+</script>
+</body>
+</html>
